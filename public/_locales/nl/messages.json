@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Gebruik de Chrome-vertaalbalk als zwevende knop. Vertaal pagina's zonder rechts te klikken."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Deze pagina vertalen of herstellen"
+  },
+  "translatePage": {
+    "message": "Pagina vertalen"
+  },
+  "translateDialog": {
+    "message": "Paginavertaling"
+  },
+  "moveButton": {
+    "message": "Sleep om te verplaatsen"
+  },
+  "moreOptions": {
+    "message": "Meer opties"
+  },
+  "close": {
+    "message": "Sluiten"
+  },
+  "originalLanguage": {
+    "message": "Origineel"
+  },
+  "alwaysTranslate": {
+    "message": "$LANG$ altijd vertalen",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "deze taal"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Doeltaal"
+  },
+  "hideOnThisSite": {
+    "message": "Knop op deze site verbergen"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Deze pagina is al in de doeltaal."
+  },
+  "pairUnsupported": {
+    "message": "Dit talenpaar wordt niet ondersteund door de ingebouwde vertaling."
+  },
+  "openGoogleTranslate": {
+    "message": "Openen in Google Translate"
+  },
+  "preparing": {
+    "message": "Vertaling voorbereiden…"
+  },
+  "downloadingModel": {
+    "message": "Vertaalmodel downloaden…"
+  },
+  "translating": {
+    "message": "Bezig met vertalen…"
+  },
+  "apiUnsupported": {
+    "message": "Ingebouwde vertaling is niet beschikbaar in deze Chrome-versie."
+  },
+  "translateFailed": {
+    "message": "Vertalen is mislukt."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "De Chrome-vertaalbalk, één tik verwijderd."
+  },
+  "showFloatingButton": {
+    "message": "Zwevende knop tonen"
+  },
+  "restoreOnThisSite": {
+    "message": "Knop opnieuw tonen op deze site"
+  },
+  "shortcutHint": {
+    "message": "Klik rechtsonder om te vertalen. Sneltoets: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

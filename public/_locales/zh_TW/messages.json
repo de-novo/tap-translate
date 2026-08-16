@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "把 Chrome 翻譯列做成浮動按鈕，不必按右鍵就能翻譯網頁。"
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "翻譯或還原此頁面"
+  },
+  "translatePage": {
+    "message": "翻譯此頁"
+  },
+  "translateDialog": {
+    "message": "網頁翻譯"
+  },
+  "moveButton": {
+    "message": "拖曳以移動"
+  },
+  "moreOptions": {
+    "message": "更多選項"
+  },
+  "close": {
+    "message": "關閉"
+  },
+  "originalLanguage": {
+    "message": "原文"
+  },
+  "alwaysTranslate": {
+    "message": "一律翻譯$LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "此語言"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "目標語言"
+  },
+  "hideOnThisSite": {
+    "message": "在此網站隱藏按鈕"
+  },
+  "alreadyTargetLanguage": {
+    "message": "此頁面已是目標語言。"
+  },
+  "pairUnsupported": {
+    "message": "內建翻譯不支援此語言組合。"
+  },
+  "openGoogleTranslate": {
+    "message": "以 Google 翻譯開啟"
+  },
+  "preparing": {
+    "message": "正在準備翻譯…"
+  },
+  "downloadingModel": {
+    "message": "正在下載翻譯模型…"
+  },
+  "translating": {
+    "message": "正在翻譯…"
+  },
+  "apiUnsupported": {
+    "message": "此版本的 Chrome 無法使用內建翻譯。"
+  },
+  "translateFailed": {
+    "message": "翻譯失敗。"
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Chrome 翻譯列，一鍵即用。"
+  },
+  "showFloatingButton": {
+    "message": "顯示浮動按鈕"
+  },
+  "restoreOnThisSite": {
+    "message": "在此網站再次顯示按鈕"
+  },
+  "shortcutHint": {
+    "message": "按右下角按鈕即可翻譯。快速鍵：$SHORTCUT$。",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

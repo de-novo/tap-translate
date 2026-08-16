@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Chrome की अनुवाद पट्टी को फ़्लोटिंग बटन की तरह इस्तेमाल करें। राइट-क्लिक के बिना पेज अनुवाद करें।"
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "इस पेज का अनुवाद करें या मूल रूप लाएँ"
+  },
+  "translatePage": {
+    "message": "पेज का अनुवाद करें"
+  },
+  "translateDialog": {
+    "message": "पेज अनुवाद"
+  },
+  "moveButton": {
+    "message": "खिसकाने के लिए खींचें"
+  },
+  "moreOptions": {
+    "message": "और विकल्प"
+  },
+  "close": {
+    "message": "बंद करें"
+  },
+  "originalLanguage": {
+    "message": "मूल"
+  },
+  "alwaysTranslate": {
+    "message": "$LANG$ का हमेशा अनुवाद करें",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "यह भाषा"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "लक्ष्य भाषा"
+  },
+  "hideOnThisSite": {
+    "message": "इस साइट पर बटन छिपाएँ"
+  },
+  "alreadyTargetLanguage": {
+    "message": "यह पेज पहले से लक्ष्य भाषा में है।"
+  },
+  "pairUnsupported": {
+    "message": "यह भाषा जोड़ी इन-बिल्ट अनुवाद में समर्थित नहीं है।"
+  },
+  "openGoogleTranslate": {
+    "message": "Google अनुवाद में खोलें"
+  },
+  "preparing": {
+    "message": "अनुवाद तैयार हो रहा है…"
+  },
+  "downloadingModel": {
+    "message": "अनुवाद मॉडल डाउनलोड हो रहा है…"
+  },
+  "translating": {
+    "message": "अनुवाद हो रहा है…"
+  },
+  "apiUnsupported": {
+    "message": "इस Chrome संस्करण में इन-बिल्ट अनुवाद उपलब्ध नहीं है।"
+  },
+  "translateFailed": {
+    "message": "अनुवाद असफल रहा।"
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Chrome की अनुवाद पट्टी, एक टैप में।"
+  },
+  "showFloatingButton": {
+    "message": "फ़्लोटिंग बटन दिखाएँ"
+  },
+  "restoreOnThisSite": {
+    "message": "इस साइट पर बटन फिर दिखाएँ"
+  },
+  "shortcutHint": {
+    "message": "अनुवाद के लिए नीचे दाईं ओर बटन पर क्लिक करें। शॉर्टकट: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

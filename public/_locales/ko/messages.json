@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "탭 번역"
+  },
+  "extDescription": {
+    "message": "탭 한 번으로 페이지를 번역합니다. 버튼은 드래그해서 옮길 수 있습니다."
+  },
+  "actionTitle": {
+    "message": "탭 번역"
+  },
+  "commandToggle": {
+    "message": "페이지 번역/원문 전환"
+  },
+  "translatePage": {
+    "message": "페이지 번역"
+  },
+  "translateDialog": {
+    "message": "페이지 번역"
+  },
+  "moveButton": {
+    "message": "위치 이동"
+  },
+  "moreOptions": {
+    "message": "더보기"
+  },
+  "close": {
+    "message": "닫기"
+  },
+  "originalLanguage": {
+    "message": "원문"
+  },
+  "alwaysTranslate": {
+    "message": "$LANG$ 항상 번역",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "이 언어"
+  },
+  "mixedLanguages": {
+    "message": "여러 언어"
+  },
+  "autoDetect": {
+    "message": "자동"
+  },
+  "alwaysTranslateForeign": {
+    "message": "다른 언어 항상 번역"
+  },
+  "targetLanguage": {
+    "message": "목표 언어"
+  },
+  "hideOnThisSite": {
+    "message": "이 사이트에서 버튼 숨기기"
+  },
+  "alreadyTargetLanguage": {
+    "message": "이미 목표 언어로 된 페이지입니다."
+  },
+  "pairUnsupported": {
+    "message": "이 언어쌍은 내장 번역을 쓸 수 없습니다."
+  },
+  "openGoogleTranslate": {
+    "message": "Google 번역으로 열기"
+  },
+  "preparing": {
+    "message": "번역 준비 중…"
+  },
+  "downloadingModel": {
+    "message": "번역 모델을 받는 중…"
+  },
+  "translating": {
+    "message": "번역 중…"
+  },
+  "apiUnsupported": {
+    "message": "이 Chrome에서는 내장 번역을 쓸 수 없습니다."
+  },
+  "translateFailed": {
+    "message": "번역에 실패했습니다."
+  },
+  "reloadPage": {
+    "message": "이 페이지 새로고침"
+  },
+  "popupTagline": {
+    "message": "탭 한 번으로 페이지 번역. 버튼은 원하는 곳에 두고 씁니다."
+  },
+  "showFloatingButton": {
+    "message": "플로팅 버튼 표시"
+  },
+  "restoreOnThisSite": {
+    "message": "이 사이트에서 다시 표시"
+  },
+  "shortcutHint": {
+    "message": "버튼을 드래그하면 위치를 옮길 수 있습니다. 클릭하면 번역됩니다. 단축키: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

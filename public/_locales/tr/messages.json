@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Chrome çeviri çubuğunu kayan bir düğme olarak kullanın. Sağ tıklamadan sayfa çevirin."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Bu sayfayı çevir veya geri yükle"
+  },
+  "translatePage": {
+    "message": "Sayfayı çevir"
+  },
+  "translateDialog": {
+    "message": "Sayfa çevirisi"
+  },
+  "moveButton": {
+    "message": "Taşımak için sürükleyin"
+  },
+  "moreOptions": {
+    "message": "Diğer seçenekler"
+  },
+  "close": {
+    "message": "Kapat"
+  },
+  "originalLanguage": {
+    "message": "Orijinal"
+  },
+  "alwaysTranslate": {
+    "message": "$LANG$ her zaman çevir",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "bu dil"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Hedef dil"
+  },
+  "hideOnThisSite": {
+    "message": "Bu sitede düğmeyi gizle"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Bu sayfa zaten hedef dilde."
+  },
+  "pairUnsupported": {
+    "message": "Bu dil çifti yerleşik çeviri tarafından desteklenmiyor."
+  },
+  "openGoogleTranslate": {
+    "message": "Google Çeviri'de aç"
+  },
+  "preparing": {
+    "message": "Çeviri hazırlanıyor…"
+  },
+  "downloadingModel": {
+    "message": "Çeviri modeli indiriliyor…"
+  },
+  "translating": {
+    "message": "Çevriliyor…"
+  },
+  "apiUnsupported": {
+    "message": "Yerleşik çeviri bu Chrome sürümünde kullanılamıyor."
+  },
+  "translateFailed": {
+    "message": "Çeviri başarısız oldu."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Chrome çeviri çubuğu, bir dokunuş uzağınızda."
+  },
+  "showFloatingButton": {
+    "message": "Kayan düğmeyi göster"
+  },
+  "restoreOnThisSite": {
+    "message": "Bu sitede düğmeyi yeniden göster"
+  },
+  "shortcutHint": {
+    "message": "Çevirmek için sağ alttaki düğmeye tıklayın. Kısayol: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

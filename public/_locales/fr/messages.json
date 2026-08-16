@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Utilisez la barre de traduction de Chrome comme bouton flottant. Traduisez les pages sans clic droit."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Traduire ou restaurer cette page"
+  },
+  "translatePage": {
+    "message": "Traduire la page"
+  },
+  "translateDialog": {
+    "message": "Traduction de la page"
+  },
+  "moveButton": {
+    "message": "Faites glisser pour déplacer"
+  },
+  "moreOptions": {
+    "message": "Plus d'options"
+  },
+  "close": {
+    "message": "Fermer"
+  },
+  "originalLanguage": {
+    "message": "Original"
+  },
+  "alwaysTranslate": {
+    "message": "Toujours traduire $LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "cette langue"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Langue cible"
+  },
+  "hideOnThisSite": {
+    "message": "Masquer le bouton sur ce site"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Cette page est déjà dans la langue cible."
+  },
+  "pairUnsupported": {
+    "message": "Cette paire de langues n'est pas prise en charge par la traduction intégrée."
+  },
+  "openGoogleTranslate": {
+    "message": "Ouvrir dans Google Traduction"
+  },
+  "preparing": {
+    "message": "Préparation de la traduction…"
+  },
+  "downloadingModel": {
+    "message": "Téléchargement du modèle de traduction…"
+  },
+  "translating": {
+    "message": "Traduction…"
+  },
+  "apiUnsupported": {
+    "message": "La traduction intégrée n'est pas disponible dans cette version de Chrome."
+  },
+  "translateFailed": {
+    "message": "Échec de la traduction."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "La barre de traduction Chrome, en un geste."
+  },
+  "showFloatingButton": {
+    "message": "Afficher le bouton flottant"
+  },
+  "restoreOnThisSite": {
+    "message": "Réafficher le bouton sur ce site"
+  },
+  "shortcutHint": {
+    "message": "Cliquez sur le bouton en bas à droite pour traduire. Raccourci : $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

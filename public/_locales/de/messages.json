@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Die Chrome-Übersetzungsleiste als Schaltfläche. Seiten übersetzen ohne Rechtsklick."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Diese Seite übersetzen oder wiederherstellen"
+  },
+  "translatePage": {
+    "message": "Seite übersetzen"
+  },
+  "translateDialog": {
+    "message": "Seitenübersetzung"
+  },
+  "moveButton": {
+    "message": "Zum Verschieben ziehen"
+  },
+  "moreOptions": {
+    "message": "Weitere Optionen"
+  },
+  "close": {
+    "message": "Schließen"
+  },
+  "originalLanguage": {
+    "message": "Original"
+  },
+  "alwaysTranslate": {
+    "message": "$LANG$ immer übersetzen",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "diese Sprache"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Zielsprache"
+  },
+  "hideOnThisSite": {
+    "message": "Schaltfläche auf dieser Website ausblenden"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Diese Seite ist bereits in der Zielsprache."
+  },
+  "pairUnsupported": {
+    "message": "Dieses Sprachpaar wird von der integrierten Übersetzung nicht unterstützt."
+  },
+  "openGoogleTranslate": {
+    "message": "In Google Übersetzer öffnen"
+  },
+  "preparing": {
+    "message": "Übersetzung wird vorbereitet…"
+  },
+  "downloadingModel": {
+    "message": "Übersetzungsmodell wird heruntergeladen…"
+  },
+  "translating": {
+    "message": "Übersetzung läuft…"
+  },
+  "apiUnsupported": {
+    "message": "Die integrierte Übersetzung ist in dieser Chrome-Version nicht verfügbar."
+  },
+  "translateFailed": {
+    "message": "Übersetzung fehlgeschlagen."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Die Chrome-Übersetzungsleiste, ein Tipp entfernt."
+  },
+  "showFloatingButton": {
+    "message": "Schwebende Schaltfläche anzeigen"
+  },
+  "restoreOnThisSite": {
+    "message": "Schaltfläche auf dieser Website wieder anzeigen"
+  },
+  "shortcutHint": {
+    "message": "Klicken Sie unten rechts, um zu übersetzen. Tastenkombination: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

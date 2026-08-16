@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Tap once to translate the page. Drag the button anywhere — no right-click needed."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Translate or restore this page"
+  },
+  "translatePage": {
+    "message": "Translate page"
+  },
+  "translateDialog": {
+    "message": "Page translation"
+  },
+  "moveButton": {
+    "message": "Drag to move"
+  },
+  "moreOptions": {
+    "message": "More options"
+  },
+  "close": {
+    "message": "Close"
+  },
+  "originalLanguage": {
+    "message": "Original"
+  },
+  "alwaysTranslate": {
+    "message": "Always translate $LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "this language"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Target language"
+  },
+  "hideOnThisSite": {
+    "message": "Hide button on this site"
+  },
+  "alreadyTargetLanguage": {
+    "message": "This page is already in the target language."
+  },
+  "pairUnsupported": {
+    "message": "This language pair is not supported by built-in translation."
+  },
+  "openGoogleTranslate": {
+    "message": "Open in Google Translate"
+  },
+  "preparing": {
+    "message": "Preparing translation…"
+  },
+  "downloadingModel": {
+    "message": "Downloading translation model…"
+  },
+  "translating": {
+    "message": "Translating…"
+  },
+  "apiUnsupported": {
+    "message": "Built-in translation is not available in this version of Chrome."
+  },
+  "translateFailed": {
+    "message": "Translation failed."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Tap to translate the page. Drag the button wherever you want."
+  },
+  "showFloatingButton": {
+    "message": "Show floating button"
+  },
+  "restoreOnThisSite": {
+    "message": "Show button on this site again"
+  },
+  "shortcutHint": {
+    "message": "Drag the floating button to move it. Click to translate. Shortcut: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

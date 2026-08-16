@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Gunakan bilah terjemahan Chrome sebagai tombol mengambang. Terjemahkan halaman tanpa klik kanan."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Terjemahkan atau pulihkan halaman ini"
+  },
+  "translatePage": {
+    "message": "Terjemahkan halaman"
+  },
+  "translateDialog": {
+    "message": "Terjemahan halaman"
+  },
+  "moveButton": {
+    "message": "Seret untuk memindahkan"
+  },
+  "moreOptions": {
+    "message": "Opsi lainnya"
+  },
+  "close": {
+    "message": "Tutup"
+  },
+  "originalLanguage": {
+    "message": "Asli"
+  },
+  "alwaysTranslate": {
+    "message": "Selalu terjemahkan $LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "bahasa ini"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Bahasa tujuan"
+  },
+  "hideOnThisSite": {
+    "message": "Sembunyikan tombol di situs ini"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Halaman ini sudah dalam bahasa tujuan."
+  },
+  "pairUnsupported": {
+    "message": "Pasangan bahasa ini tidak didukung terjemahan bawaan."
+  },
+  "openGoogleTranslate": {
+    "message": "Buka di Google Terjemahan"
+  },
+  "preparing": {
+    "message": "Menyiapkan terjemahan…"
+  },
+  "downloadingModel": {
+    "message": "Mengunduh model terjemahan…"
+  },
+  "translating": {
+    "message": "Menerjemahkan…"
+  },
+  "apiUnsupported": {
+    "message": "Terjemahan bawaan tidak tersedia di Chrome ini."
+  },
+  "translateFailed": {
+    "message": "Terjemahan gagal."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Bilah terjemahan Chrome, sekali ketuk."
+  },
+  "showFloatingButton": {
+    "message": "Tampilkan tombol mengambang"
+  },
+  "restoreOnThisSite": {
+    "message": "Tampilkan lagi tombol di situs ini"
+  },
+  "shortcutHint": {
+    "message": "Klik tombol di kanan bawah untuk menerjemahkan. Pintasan: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

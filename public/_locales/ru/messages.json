@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Панель перевода Chrome в виде плавающей кнопки. Переводите страницы без правого клика."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Перевести или восстановить эту страницу"
+  },
+  "translatePage": {
+    "message": "Перевести страницу"
+  },
+  "translateDialog": {
+    "message": "Перевод страницы"
+  },
+  "moveButton": {
+    "message": "Перетащите, чтобы переместить"
+  },
+  "moreOptions": {
+    "message": "Ещё"
+  },
+  "close": {
+    "message": "Закрыть"
+  },
+  "originalLanguage": {
+    "message": "Оригинал"
+  },
+  "alwaysTranslate": {
+    "message": "Всегда переводить: $LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "этот язык"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Язык перевода"
+  },
+  "hideOnThisSite": {
+    "message": "Скрыть кнопку на этом сайте"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Эта страница уже на языке перевода."
+  },
+  "pairUnsupported": {
+    "message": "Встроенный перевод не поддерживает эту пару языков."
+  },
+  "openGoogleTranslate": {
+    "message": "Открыть в Google Переводчике"
+  },
+  "preparing": {
+    "message": "Подготовка перевода…"
+  },
+  "downloadingModel": {
+    "message": "Загрузка модели перевода…"
+  },
+  "translating": {
+    "message": "Идёт перевод…"
+  },
+  "apiUnsupported": {
+    "message": "Встроенный перевод недоступен в этой версии Chrome."
+  },
+  "translateFailed": {
+    "message": "Не удалось перевести."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Панель перевода Chrome — в одно нажатие."
+  },
+  "showFloatingButton": {
+    "message": "Показывать плавающую кнопку"
+  },
+  "restoreOnThisSite": {
+    "message": "Снова показать кнопку на этом сайте"
+  },
+  "shortcutHint": {
+    "message": "Нажмите кнопку в правом нижнем углу, чтобы перевести. Ярлык: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

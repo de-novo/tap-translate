@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Używaj paska tłumaczenia Chrome jako pływającego przycisku. Tłumacz strony bez klikania prawym przyciskiem."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Przetłumacz lub przywróć tę stronę"
+  },
+  "translatePage": {
+    "message": "Przetłumacz stronę"
+  },
+  "translateDialog": {
+    "message": "Tłumaczenie strony"
+  },
+  "moveButton": {
+    "message": "Przeciągnij, aby przenieść"
+  },
+  "moreOptions": {
+    "message": "Więcej opcji"
+  },
+  "close": {
+    "message": "Zamknij"
+  },
+  "originalLanguage": {
+    "message": "Oryginał"
+  },
+  "alwaysTranslate": {
+    "message": "Zawsze tłumacz: $LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "ten język"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Język docelowy"
+  },
+  "hideOnThisSite": {
+    "message": "Ukryj przycisk na tej stronie"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Ta strona jest już w języku docelowym."
+  },
+  "pairUnsupported": {
+    "message": "Wbudowane tłumaczenie nie obsługuje tej pary języków."
+  },
+  "openGoogleTranslate": {
+    "message": "Otwórz w Tłumaczu Google"
+  },
+  "preparing": {
+    "message": "Przygotowywanie tłumaczenia…"
+  },
+  "downloadingModel": {
+    "message": "Pobieranie modelu tłumaczenia…"
+  },
+  "translating": {
+    "message": "Tłumaczenie…"
+  },
+  "apiUnsupported": {
+    "message": "Wbudowane tłumaczenie jest niedostępne w tej wersji Chrome."
+  },
+  "translateFailed": {
+    "message": "Tłumaczenie nie powiodło się."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Pasek tłumaczenia Chrome — jedno stuknięcie."
+  },
+  "showFloatingButton": {
+    "message": "Pokaż pływający przycisk"
+  },
+  "restoreOnThisSite": {
+    "message": "Ponownie pokaż przycisk na tej stronie"
+  },
+  "shortcutHint": {
+    "message": "Kliknij przycisk w prawym dolnym rogu, aby przetłumaczyć. Skrót: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

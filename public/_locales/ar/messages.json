@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "استخدم شريط ترجمة Chrome كزر عائم. ترجم الصفحات دون النقر بزر الماوس الأيمن."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "ترجمة هذه الصفحة أو استعادتها"
+  },
+  "translatePage": {
+    "message": "ترجمة الصفحة"
+  },
+  "translateDialog": {
+    "message": "ترجمة الصفحة"
+  },
+  "moveButton": {
+    "message": "اسحب للنقل"
+  },
+  "moreOptions": {
+    "message": "المزيد من الخيارات"
+  },
+  "close": {
+    "message": "إغلاق"
+  },
+  "originalLanguage": {
+    "message": "الأصل"
+  },
+  "alwaysTranslate": {
+    "message": "ترجم $LANG$ دائمًا",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "هذه اللغة"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "اللغة الهدف"
+  },
+  "hideOnThisSite": {
+    "message": "إخفاء الزر في هذا الموقع"
+  },
+  "alreadyTargetLanguage": {
+    "message": "هذه الصفحة باللغة الهدف بالفعل."
+  },
+  "pairUnsupported": {
+    "message": "الترجمة المضمّنة لا تدعم زوج اللغات هذا."
+  },
+  "openGoogleTranslate": {
+    "message": "فتح في ترجمة Google"
+  },
+  "preparing": {
+    "message": "جارٍ تجهيز الترجمة…"
+  },
+  "downloadingModel": {
+    "message": "جارٍ تنزيل نموذج الترجمة…"
+  },
+  "translating": {
+    "message": "جارٍ الترجمة…"
+  },
+  "apiUnsupported": {
+    "message": "الترجمة المضمّنة غير متاحة في إصدار Chrome هذا."
+  },
+  "translateFailed": {
+    "message": "فشلت الترجمة."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "شريط ترجمة Chrome بلمسة واحدة."
+  },
+  "showFloatingButton": {
+    "message": "إظهار الزر العائم"
+  },
+  "restoreOnThisSite": {
+    "message": "إظهار الزر في هذا الموقع مرة أخرى"
+  },
+  "shortcutHint": {
+    "message": "انقر الزر في أسفل اليمين للترجمة. الاختصار: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

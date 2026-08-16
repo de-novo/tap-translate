@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Dùng thanh dịch của Chrome như nút nổi. Dịch trang mà không cần chuột phải."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Dịch hoặc khôi phục trang này"
+  },
+  "translatePage": {
+    "message": "Dịch trang"
+  },
+  "translateDialog": {
+    "message": "Dịch trang"
+  },
+  "moveButton": {
+    "message": "Kéo để di chuyển"
+  },
+  "moreOptions": {
+    "message": "Tùy chọn khác"
+  },
+  "close": {
+    "message": "Đóng"
+  },
+  "originalLanguage": {
+    "message": "Nguyên bản"
+  },
+  "alwaysTranslate": {
+    "message": "Luôn dịch $LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "ngôn ngữ này"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Ngôn ngữ đích"
+  },
+  "hideOnThisSite": {
+    "message": "Ẩn nút trên trang này"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Trang này đã ở ngôn ngữ đích."
+  },
+  "pairUnsupported": {
+    "message": "Cặp ngôn ngữ này không được dịch tích hợp hỗ trợ."
+  },
+  "openGoogleTranslate": {
+    "message": "Mở trong Google Dịch"
+  },
+  "preparing": {
+    "message": "Đang chuẩn bị dịch…"
+  },
+  "downloadingModel": {
+    "message": "Đang tải mô hình dịch…"
+  },
+  "translating": {
+    "message": "Đang dịch…"
+  },
+  "apiUnsupported": {
+    "message": "Bản Chrome này không có dịch tích hợp."
+  },
+  "translateFailed": {
+    "message": "Dịch không thành công."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Thanh dịch Chrome, chỉ một chạm."
+  },
+  "showFloatingButton": {
+    "message": "Hiện nút nổi"
+  },
+  "restoreOnThisSite": {
+    "message": "Hiện lại nút trên trang này"
+  },
+  "shortcutHint": {
+    "message": "Nhấp nút góc dưới bên phải để dịch. Phím tắt: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

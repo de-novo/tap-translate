@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "把 Chrome 翻译栏做成浮动按钮，无需右键即可翻译网页。"
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "翻译或还原此页面"
+  },
+  "translatePage": {
+    "message": "翻译此页"
+  },
+  "translateDialog": {
+    "message": "网页翻译"
+  },
+  "moveButton": {
+    "message": "拖动以移动"
+  },
+  "moreOptions": {
+    "message": "更多选项"
+  },
+  "close": {
+    "message": "关闭"
+  },
+  "originalLanguage": {
+    "message": "原文"
+  },
+  "alwaysTranslate": {
+    "message": "始终翻译$LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "此语言"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "目标语言"
+  },
+  "hideOnThisSite": {
+    "message": "在此网站隐藏按钮"
+  },
+  "alreadyTargetLanguage": {
+    "message": "此页面已是目标语言。"
+  },
+  "pairUnsupported": {
+    "message": "内置翻译不支持此语言对。"
+  },
+  "openGoogleTranslate": {
+    "message": "在 Google 翻译中打开"
+  },
+  "preparing": {
+    "message": "正在准备翻译…"
+  },
+  "downloadingModel": {
+    "message": "正在下载翻译模型…"
+  },
+  "translating": {
+    "message": "正在翻译…"
+  },
+  "apiUnsupported": {
+    "message": "此版本的 Chrome 不支持内置翻译。"
+  },
+  "translateFailed": {
+    "message": "翻译失败。"
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Chrome 翻译栏，一键即用。"
+  },
+  "showFloatingButton": {
+    "message": "显示浮动按钮"
+  },
+  "restoreOnThisSite": {
+    "message": "在此网站重新显示按钮"
+  },
+  "shortcutHint": {
+    "message": "点击右下角按钮即可翻译。快捷键：$SHORTCUT$。",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

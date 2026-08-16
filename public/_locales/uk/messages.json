@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "Панель перекладу Chrome у вигляді плаваючої кнопки. Перекладайте сторінки без правого кліку."
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "Перекласти або відновити цю сторінку"
+  },
+  "translatePage": {
+    "message": "Перекласти сторінку"
+  },
+  "translateDialog": {
+    "message": "Переклад сторінки"
+  },
+  "moveButton": {
+    "message": "Перетягніть, щоб перемістити"
+  },
+  "moreOptions": {
+    "message": "Інші параметри"
+  },
+  "close": {
+    "message": "Закрити"
+  },
+  "originalLanguage": {
+    "message": "Оригінал"
+  },
+  "alwaysTranslate": {
+    "message": "Завжди перекладати: $LANG$",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "цю мову"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "Мова перекладу"
+  },
+  "hideOnThisSite": {
+    "message": "Сховати кнопку на цьому сайті"
+  },
+  "alreadyTargetLanguage": {
+    "message": "Ця сторінка вже мовою перекладу."
+  },
+  "pairUnsupported": {
+    "message": "Вбудований переклад не підтримує цю пару мов."
+  },
+  "openGoogleTranslate": {
+    "message": "Відкрити в Google Перекладачі"
+  },
+  "preparing": {
+    "message": "Підготовка перекладу…"
+  },
+  "downloadingModel": {
+    "message": "Завантаження моделі перекладу…"
+  },
+  "translating": {
+    "message": "Триває переклад…"
+  },
+  "apiUnsupported": {
+    "message": "Вбудований переклад недоступний у цій версії Chrome."
+  },
+  "translateFailed": {
+    "message": "Не вдалося перекласти."
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "Панель перекладу Chrome — в один дотик."
+  },
+  "showFloatingButton": {
+    "message": "Показувати плаваючу кнопку"
+  },
+  "restoreOnThisSite": {
+    "message": "Знову показати кнопку на цьому сайті"
+  },
+  "shortcutHint": {
+    "message": "Натисніть кнопку в правому нижньому куті, щоб перекласти. Скорочення: $SHORTCUT$.",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}

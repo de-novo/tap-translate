@@ -1,0 +1,104 @@
+{
+  "extName": {
+    "message": "Tap Translate"
+  },
+  "extDescription": {
+    "message": "ใช้แถบแปลของ Chrome เป็นปุ่มลอย แปลหน้าเว็บโดยไม่ต้องคลิกขวา"
+  },
+  "actionTitle": {
+    "message": "Tap Translate"
+  },
+  "commandToggle": {
+    "message": "แปลหรือคืนค่าหน้านี้"
+  },
+  "translatePage": {
+    "message": "แปลหน้านี้"
+  },
+  "translateDialog": {
+    "message": "แปลหน้าเว็บ"
+  },
+  "moveButton": {
+    "message": "ลากเพื่อย้าย"
+  },
+  "moreOptions": {
+    "message": "ตัวเลือกเพิ่มเติม"
+  },
+  "close": {
+    "message": "ปิด"
+  },
+  "originalLanguage": {
+    "message": "ต้นฉบับ"
+  },
+  "alwaysTranslate": {
+    "message": "แปล $LANG$ เสมอ",
+    "placeholders": {
+      "lang": {
+        "content": "$1",
+        "example": "English"
+      }
+    }
+  },
+  "thisLanguage": {
+    "message": "ภาษานี้"
+  },
+  "mixedLanguages": {
+    "message": "Multiple languages"
+  },
+  "autoDetect": {
+    "message": "Auto"
+  },
+  "alwaysTranslateForeign": {
+    "message": "Always translate other languages"
+  },
+  "targetLanguage": {
+    "message": "ภาษาปลายทาง"
+  },
+  "hideOnThisSite": {
+    "message": "ซ่อนปุ่มในเว็บนี้"
+  },
+  "alreadyTargetLanguage": {
+    "message": "หน้านี้เป็นภาษาปลายทางอยู่แล้ว"
+  },
+  "pairUnsupported": {
+    "message": "การแปลในตัวไม่รองรับคู่ภาษานี้"
+  },
+  "openGoogleTranslate": {
+    "message": "เปิดใน Google แปลภาษา"
+  },
+  "preparing": {
+    "message": "กำลังเตรียมการแปล…"
+  },
+  "downloadingModel": {
+    "message": "กำลังดาวน์โหลดโมเดลแปล…"
+  },
+  "translating": {
+    "message": "กำลังแปล…"
+  },
+  "apiUnsupported": {
+    "message": "Chrome เวอร์ชันนี้ไม่รองรับการแปลในตัว"
+  },
+  "translateFailed": {
+    "message": "แปลไม่สำเร็จ"
+  },
+  "reloadPage": {
+    "message": "Reload this page"
+  },
+  "popupTagline": {
+    "message": "แถบแปลของ Chrome ในคลิกเดียว"
+  },
+  "showFloatingButton": {
+    "message": "แสดงปุ่มลอย"
+  },
+  "restoreOnThisSite": {
+    "message": "แสดงปุ่มในเว็บนี้อีกครั้ง"
+  },
+  "shortcutHint": {
+    "message": "คลิกปุ่มมุมขวาล่างเพื่อแปล ทางลัด: $SHORTCUT$",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1",
+        "example": "Alt+Shift+T"
+      }
+    }
+  }
+}
