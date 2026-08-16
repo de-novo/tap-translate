@@ -1,5 +1,5 @@
 import { MoreVerticalIcon, XIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { browser } from "wxt/browser";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,7 +40,6 @@ type WidgetAppProps = {
 
 export function WidgetApp({ translator, onHide }: WidgetAppProps) {
   const { settings, update, reload, ready } = useSettings();
-  const wrapRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [sourceLang, setSourceLang] = useState("");
@@ -64,7 +63,8 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     [update]
   );
 
-  const { dragging } = useDragPosition(wrapRef, position, setPosition, commitPosition);
+  const canDrag = ready && !hidden;
+  const { dragging, dragRef, onPointerDown } = useDragPosition(canDrag, position, setPosition, commitPosition);
 
   const syncTranslatorUi = useCallback(() => {
     setTranslatorState(translator.state);
@@ -238,7 +238,8 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
 
   return (
     <div
-      ref={wrapRef}
+      ref={dragRef}
+      onPointerDown={onPointerDown}
       className={cn(
         "pointer-events-auto fixed z-[2147483646] text-card-foreground select-none touch-none",
         dragging && "opacity-90 cursor-grabbing"
@@ -255,13 +256,15 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     >
       {!expanded && (
         <div
+          data-drag-handle
           className="flex cursor-grab items-center gap-1.5 rounded-2xl border border-primary/35 bg-card p-1.5 pr-2 shadow-lg"
           title={t("moveButton")}
         >
           <Grip />
           <button
             type="button"
-            className="size-9 overflow-hidden rounded-lg"
+            data-drag-handle
+            className="fab-action size-9 overflow-hidden rounded-lg"
             title={t("translatePage")}
             onClick={() => void onFabClick()}
           >
@@ -272,8 +275,10 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
 
       {expanded && (
         <Card className="w-[min(280px,calc(100vw-24px))] gap-0 overflow-hidden py-0 shadow-xl" role="dialog" aria-label={t("translateDialog")}>
-          <div className="flex cursor-grab items-center gap-2 px-2.5 py-2" title={t("moveButton")}>
-            <Grip />
+          <div className="flex items-center gap-2 px-2.5 py-2">
+            <span data-drag-handle className="cursor-grab" title={t("moveButton")}>
+              <Grip />
+            </span>
             <LanguageSelect
               className="h-8 min-w-0 flex-1 font-semibold"
               id="target-select"

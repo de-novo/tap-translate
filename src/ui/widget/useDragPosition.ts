@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefCallback } from "react";
 import type { Position } from "../../lib/settings";
 
 function clampPosition(wrap: HTMLElement | null, right: number, bottom: number): Position {
@@ -12,102 +12,90 @@ function clampPosition(wrap: HTMLElement | null, right: number, bottom: number):
 }
 
 function isDragIgnore(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  if (target.closest("[data-drag-handle]")) return false;
   return Boolean(
-    target instanceof Element &&
-      target.closest(
-        "button, a, input, select, label, textarea, [data-slot='select-trigger'], [data-slot='dropdown-menu-trigger'], [data-slot='checkbox']"
-      )
+    target.closest(
+      "button, a, input, select, label, textarea, [data-slot='select-trigger'], [data-slot='dropdown-menu-trigger'], [data-slot='checkbox']"
+    )
   );
 }
 
 export function useDragPosition(
-  wrapRef: RefObject<HTMLElement | null>,
+  enabled: boolean,
   position: Position,
   onMove: (next: Position) => void,
   onCommit: (next: Position) => void
 ) {
+  const [node, setNode] = useState<HTMLElement | null>(null);
   const [dragging, setDragging] = useState(false);
   const positionRef = useRef(position);
   const onMoveRef = useRef(onMove);
   const onCommitRef = useRef(onCommit);
+  const enabledRef = useRef(enabled);
   positionRef.current = position;
   onMoveRef.current = onMove;
   onCommitRef.current = onCommit;
+  enabledRef.current = enabled;
 
-  useEffect(() => {
-    const root = wrapRef.current;
-    if (!root) return;
+  const dragRef = useCallback<RefCallback<HTMLElement>>((el) => {
+    setNode(el);
+  }, []);
 
-    let pointerId: number | null = null;
-    let startX = 0;
-    let startY = 0;
-    let startRight = 0;
-    let startBottom = 0;
+  const onPointerDown = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+    if (!enabledRef.current || event.button !== 0 || isDragIgnore(event.target)) return;
+    const root = event.currentTarget;
+    const pointerId = event.pointerId;
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const rect = root.getBoundingClientRect();
+    const startRight = window.innerWidth - rect.right;
+    const startBottom = window.innerHeight - rect.bottom;
     let moved = false;
-    let ignoreClick = false;
 
-    const onDown = (event: PointerEvent) => {
-      if (event.button !== 0 || isDragIgnore(event.target)) return;
-      pointerId = event.pointerId;
-      root.setPointerCapture(pointerId);
-      moved = false;
-      startX = event.clientX;
-      startY = event.clientY;
-      const rect = root.getBoundingClientRect();
-      startRight = window.innerWidth - rect.right;
-      startBottom = window.innerHeight - rect.bottom;
-    };
-
-    const onMovePointer = (event: PointerEvent) => {
-      if (pointerId == null) return;
-      const dx = event.clientX - startX;
-      const dy = event.clientY - startY;
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+    const onMovePointer = (moveEvent: PointerEvent) => {
+      if (moveEvent.pointerId !== pointerId) return;
+      const dx = moveEvent.clientX - startX;
+      const dy = moveEvent.clientY - startY;
+      if (!moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
         moved = true;
         setDragging(true);
       }
       if (!moved) return;
+      moveEvent.preventDefault();
       onMoveRef.current(clampPosition(root, startRight - dx, startBottom - dy));
     };
 
-    const onEnd = (event: PointerEvent) => {
-      if (pointerId == null) return;
-      pointerId = null;
+    const onEnd = (endEvent: PointerEvent) => {
+      if (endEvent.pointerId !== pointerId) return;
+      window.removeEventListener("pointermove", onMovePointer, true);
+      window.removeEventListener("pointerup", onEnd, true);
+      window.removeEventListener("pointercancel", onEnd, true);
       setDragging(false);
-      if (moved) {
-        event.preventDefault();
-        ignoreClick = true;
-        onCommitRef.current(positionRef.current);
-      }
+      if (!moved) return;
+      endEvent.preventDefault();
+      onCommitRef.current(positionRef.current);
+      const suppressClick = (clickEvent: MouseEvent) => {
+        clickEvent.preventDefault();
+        clickEvent.stopImmediatePropagation();
+      };
+      root.addEventListener("click", suppressClick, true);
+      window.setTimeout(() => root.removeEventListener("click", suppressClick, true), 0);
     };
 
-    const onClick = (event: MouseEvent) => {
-      if (moved || ignoreClick) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        ignoreClick = false;
-      }
-    };
+    window.addEventListener("pointermove", onMovePointer, true);
+    window.addEventListener("pointerup", onEnd, true);
+    window.addEventListener("pointercancel", onEnd, true);
+  }, []);
 
+  useEffect(() => {
+    if (!node) return;
     const onResize = () => {
-      onMoveRef.current(clampPosition(root, positionRef.current.right, positionRef.current.bottom));
+      onMoveRef.current(clampPosition(node, positionRef.current.right, positionRef.current.bottom));
     };
-
-    root.addEventListener("pointerdown", onDown);
-    root.addEventListener("pointermove", onMovePointer);
-    root.addEventListener("pointerup", onEnd);
-    root.addEventListener("pointercancel", onEnd);
-    root.addEventListener("click", onClick, true);
     window.addEventListener("resize", onResize);
-    return () => {
-      root.removeEventListener("pointerdown", onDown);
-      root.removeEventListener("pointermove", onMovePointer);
-      root.removeEventListener("pointerup", onEnd);
-      root.removeEventListener("pointercancel", onEnd);
-      root.removeEventListener("click", onClick, true);
-      window.removeEventListener("resize", onResize);
-    };
-  }, [wrapRef]);
+    return () => window.removeEventListener("resize", onResize);
+  }, [node]);
 
-  return { dragging, clamp: (right: number, bottom: number) => clampPosition(wrapRef.current, right, bottom) };
+  return { dragging, dragRef, onPointerDown };
 }

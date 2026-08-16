@@ -21,10 +21,11 @@ export async function mountFloatingWidget(ctx: ContentScriptContext): Promise<vo
     anchor: "html",
     mode: "closed",
     isolateEvents: ["keydown", "keyup", "keypress"],
+    // WXT injects `:host{all:initial !important}`, which wins over inline host styles.
+    css: ":host{display:block!important;position:fixed!important;inset:0!important;width:100%!important;height:100%!important;pointer-events:none!important;overflow:visible!important;z-index:2147483646!important;}",
     onMount(container, _shadow, host) {
       host.id = WIDGET_HOST_ID;
       host.setAttribute("translate", "no");
-      host.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:2147483646";
       const app = document.createElement("div");
       container.append(app);
       const root = createRoot(app);
