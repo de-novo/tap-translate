@@ -1,18 +1,11 @@
-import { MoreVerticalIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { browser } from "wxt/browser";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { collectTextNodes, shouldTranslateText } from "@/lib/dom";
+import { collectTextNodes, shouldTranslateText, WIDGET_HOST_ID } from "@/lib/dom";
 import { defaultTargetLang, isRtl, t, uiLanguage } from "@/lib/i18n";
 import { isAlreadyTargetLang, type LanguageCode } from "@/lib/language";
 import type { PageTranslator } from "@/lib/page-translator";
@@ -50,6 +43,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
   const [fullscreen, setFullscreen] = useState(Boolean(document.fullscreenElement));
   const [position, setPosition] = useState<Position>(settings?.position ?? { right: 20, bottom: 24 });
   const iconUrl = browser.runtime.getURL("/icons/icon48.png");
+  const failed = Boolean(status?.action);
 
   useEffect(() => {
     if (settings?.position) setPosition(settings.position);
@@ -98,6 +92,11 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     );
   }, [settings?.targetLang, sourceLang]);
 
+  const fail = useCallback((next: Status) => {
+    setStatus(next);
+    setExpanded(true);
+  }, []);
+
   const translateToTarget = useCallback(
     async (targetOverride?: string) => {
       if (busy || !settings) return;
@@ -109,14 +108,13 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
         void detectSource();
       }
       if (!pageHasForeignText(targetLang)) {
-        setStatus({ text: t("alreadyTargetLanguage") });
+        setStatus(null);
         syncTranslatorUi();
         return;
       }
 
       setBusy(true);
-      setExpanded(true);
-      setStatus({ text: t("preparing") });
+      setStatus(null);
       translator.setProgressHandler((value) => {
         setProgress(value);
         setTranslatorState(translator.state);
@@ -125,19 +123,19 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
       matchPageTranslate(result, {
         onTranslated: () => setStatus(null),
         onInvalidated: () =>
-          setStatus({
+          fail({
             text: t("translateFailed"),
             actionLabel: t("reloadPage"),
             action: () => location.reload()
           }),
         onUnsupported: () =>
-          setStatus({
+          fail({
             text: t("apiUnsupported"),
             actionLabel: t("openGoogleTranslate"),
             action: openGoogleTranslate
           }),
         onFailed: () =>
-          setStatus({
+          fail({
             text: t("translateFailed"),
             actionLabel: t("openGoogleTranslate"),
             action: openGoogleTranslate
@@ -149,6 +147,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     [
       busy,
       detectSource,
+      fail,
       openGoogleTranslate,
       pageHasForeignText,
       selectedTarget,
@@ -165,10 +164,15 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     syncTranslatorUi();
   }, [syncTranslatorUi, translator]);
 
-  const onFabClick = useCallback(async () => {
-    setExpanded(true);
-    if (translator.state !== "translated") await translateToTarget();
-  }, [translateToTarget, translator]);
+  const togglePage = useCallback(() => {
+    if (busy) return;
+    if (failed) {
+      setExpanded(true);
+      return;
+    }
+    if (translator.state === "translated") showOriginal();
+    else void translateToTarget();
+  }, [busy, failed, showOriginal, translateToTarget, translator]);
 
   useEffect(() => {
     translator.setProgressHandler((value) => {
@@ -196,7 +200,6 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
       await detectSource();
       if (cancelled) return;
       if (settings.alwaysTranslate.includes("*") && pageHasForeignText(settings.targetLang)) {
-        setExpanded(true);
         await translateToTarget();
       }
     })();
@@ -210,21 +213,14 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
   useEffect(() => {
     const onMessage = (message: unknown) => {
       if (!runtimeAlive() || !message) return;
-      if (isToggleMessage(message)) {
-        if (translator.state === "translated") {
-          showOriginal();
-          setExpanded(true);
-        } else {
-          void onFabClick();
-        }
-      }
+      if (isToggleMessage(message)) togglePage();
       if (isSettingsMessage(message) || isShowSiteMessage(message)) {
         void reload();
       }
     };
     browser.runtime.onMessage.addListener(onMessage);
     return () => browser.runtime.onMessage.removeListener(onMessage);
-  }, [onFabClick, reload, showOriginal, translator]);
+  }, [reload, togglePage]);
 
   useEffect(() => {
     const onFullscreen = () => setFullscreen(Boolean(document.fullscreenElement));
@@ -232,9 +228,22 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     return () => document.removeEventListener("fullscreenchange", onFullscreen);
   }, []);
 
+  useEffect(() => {
+    if (!expanded) return;
+    const onPointerDownOutside = (event: PointerEvent) => {
+      const host = document.getElementById(WIDGET_HOST_ID);
+      if (host && (event.target === host || host.contains(event.target as Node))) return;
+      setExpanded(false);
+    };
+    window.addEventListener("pointerdown", onPointerDownOutside, true);
+    return () => window.removeEventListener("pointerdown", onPointerDownOutside, true);
+  }, [expanded]);
+
   if (!ready || !settings || hidden) return null;
 
   const alwaysOn = settings.alwaysTranslate.includes("*");
+  const translating = busy || translatorState === "translating";
+  const translated = translatorState === "translated";
 
   return (
     <div
@@ -256,20 +265,41 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     >
       {!expanded && (
         <div
-          data-drag-handle
-          className="flex cursor-grab items-center gap-1.5 rounded-2xl border border-primary/35 bg-card p-1.5 pr-2 shadow-lg"
-          title={t("moveButton")}
+          className={cn(
+            "relative flex items-center gap-0.5 rounded-2xl border bg-card p-1.5 pr-1 shadow-lg",
+            failed ? "border-destructive" : translated ? "border-primary" : "border-primary/35"
+          )}
         >
-          <Grip />
+          <span data-drag-handle className="cursor-grab px-0.5" title={t("moveButton")}>
+            <Grip />
+          </span>
           <button
             type="button"
             data-drag-handle
-            className="fab-action size-9 overflow-hidden rounded-lg"
-            title={t("translatePage")}
-            onClick={() => void onFabClick()}
+            className="fab-action relative size-9 overflow-hidden rounded-lg"
+            title={translated ? t("originalLanguage") : t("translatePage")}
+            onClick={togglePage}
           >
             <img src={iconUrl} alt="" className="size-9" />
           </button>
+          <button
+            type="button"
+            className="text-muted-foreground hover:text-foreground grid size-7 place-items-center rounded-md"
+            title={t("moreOptions")}
+            aria-label={t("moreOptions")}
+            onClick={() => setExpanded(true)}
+          >
+            <ChevronDownIcon className="size-4" />
+          </button>
+          {failed && <span className="bg-destructive absolute top-1.5 right-1.5 size-1.5 rounded-full" />}
+          {translating && (
+            <div className="absolute inset-x-1.5 bottom-1 h-[3px] overflow-hidden rounded-full bg-primary/20">
+              <div
+                className="bg-primary h-full transition-[width] duration-150"
+                style={{ width: `${Math.max(8, Math.min(100, progress * 100))}%` }}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -293,24 +323,6 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
                 }
               }}
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-sm" className="menu-btn" title={t("moreOptions")} aria-label={t("moreOptions")}>
-                  <MoreVerticalIcon />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onSelect={async () => {
-                    const hosts = Array.from(new Set(settings.hiddenHosts.concat(currentHost())));
-                    await update({ hiddenHosts: hosts });
-                    onHide();
-                  }}
-                >
-                  {t("hideOnThisSite")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <Button
               variant="ghost"
               size="icon-sm"
@@ -321,26 +333,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
               <XIcon />
             </Button>
           </div>
-          <Progress value={Math.max(0, Math.min(100, progress * 100))} className="h-[3px] rounded-none" />
-          <CardContent className="space-y-3 px-2.5 pt-2.5 pb-2.5">
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant={translatorState !== "translated" ? "default" : "secondary"}
-                size="sm"
-                onClick={showOriginal}
-              >
-                {t("originalLanguage")}
-              </Button>
-              <Button
-                type="button"
-                variant={translatorState === "translated" ? "default" : "secondary"}
-                size="sm"
-                onClick={() => void translateToTarget()}
-              >
-                {t("translatePage")}
-              </Button>
-            </div>
+          <CardContent className="space-y-3 px-2.5 pt-1 pb-2.5">
             <Label className="text-muted-foreground font-normal">
               <Checkbox
                 checked={alwaysOn}
@@ -352,6 +345,19 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
               />
               {t("alwaysTranslateForeign")}
             </Label>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground h-auto justify-start px-0"
+              onClick={async () => {
+                const hosts = Array.from(new Set(settings.hiddenHosts.concat(currentHost())));
+                await update({ hiddenHosts: hosts });
+                onHide();
+              }}
+            >
+              {t("hideOnThisSite")}
+            </Button>
             {status && (
               <p className="text-muted-foreground text-xs">
                 {status.text}
