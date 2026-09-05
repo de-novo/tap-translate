@@ -3,7 +3,8 @@ export const MessageType = {
   Detect: "QT_DETECT",
   Toggle: "QT_TOGGLE",
   Settings: "QT_SETTINGS",
-  ShowSite: "QT_SHOW_SITE"
+  ShowSite: "QT_SHOW_SITE",
+  Ocr: "QT_OCR"
 } as const;
 
 export type TranslateRequest = {
@@ -22,6 +23,28 @@ export type ToggleMessage = { readonly type: typeof MessageType.Toggle };
 export type SettingsMessage = { readonly type: typeof MessageType.Settings };
 export type ShowSiteMessage = { readonly type: typeof MessageType.ShowSite };
 
+export type OcrLine = {
+  readonly text: string;
+  readonly confidence: number;
+  readonly x0: number;
+  readonly y0: number;
+  readonly x1: number;
+  readonly y1: number;
+  readonly rowHeight?: number;
+  readonly bg?: string;
+  readonly fg?: string;
+};
+
+export type OcrRequest = {
+  readonly type: typeof MessageType.Ocr;
+  readonly src: string;
+  readonly lang: string;
+};
+
+export type OcrResponse =
+  | { readonly ok: true; readonly width: number; readonly height: number; readonly lines: readonly OcrLine[] }
+  | { readonly ok: false; readonly error: string };
+
 export type WorkerRequest = TranslateRequest | DetectRequest;
 
 export type ExtensionMessage =
@@ -29,7 +52,8 @@ export type ExtensionMessage =
   | DetectRequest
   | ToggleMessage
   | SettingsMessage
-  | ShowSiteMessage;
+  | ShowSiteMessage
+  | OcrRequest;
 
 export type TranslateResponse =
   | { readonly ok: true; readonly translations: readonly string[] }
@@ -65,6 +89,36 @@ export const isSettingsMessage = (value: unknown): value is SettingsMessage =>
 
 export const isShowSiteMessage = (value: unknown): value is ShowSiteMessage =>
   isRecord(value) && value.type === MessageType.ShowSite;
+
+const isOcrLine = (value: unknown): value is OcrLine =>
+  isRecord(value) &&
+  typeof value.text === "string" &&
+  typeof value.confidence === "number" &&
+  typeof value.x0 === "number" &&
+  typeof value.y0 === "number" &&
+  typeof value.x1 === "number" &&
+  typeof value.y1 === "number" &&
+  (value.rowHeight === undefined || typeof value.rowHeight === "number") &&
+  (value.bg === undefined || typeof value.bg === "string") &&
+  (value.fg === undefined || typeof value.fg === "string");
+
+export const isOcrRequest = (value: unknown): value is OcrRequest =>
+  isRecord(value) &&
+  value.type === MessageType.Ocr &&
+  typeof value.src === "string" &&
+  typeof value.lang === "string";
+
+export const decodeOcrResponse = (value: unknown): OcrResponse | undefined => {
+  if (!isRecord(value) || typeof value.ok !== "boolean") return undefined;
+  if (value.ok && typeof value.width === "number" && typeof value.height === "number" && Array.isArray(value.lines)) {
+    const lines = value.lines.filter(isOcrLine);
+    return { ok: true, width: value.width, height: value.height, lines };
+  }
+  if (!value.ok && typeof value.error === "string") {
+    return { ok: false, error: value.error };
+  }
+  return undefined;
+};
 
 export const isWorkerRequest = (value: unknown): value is WorkerRequest =>
   isTranslateRequest(value) || isDetectRequest(value);

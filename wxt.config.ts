@@ -33,9 +33,17 @@ export default defineConfig({
     name: "__MSG_extName__",
     description: "__MSG_extDescription__",
     default_locale: "en",
-    minimum_chrome_version: "111",
+    minimum_chrome_version: "116",
     permissions: ["storage"],
-    host_permissions: ["https://translate.googleapis.com/*"],
+    host_permissions: [
+      "http://*/*",
+      "https://*/*",
+      "https://translate.googleapis.com/*",
+      "https://cdn.jsdelivr.net/*"
+    ],
+    content_security_policy: {
+      extension_pages: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+    },
     action: {
       default_title: "__MSG_actionTitle__"
     },
@@ -56,7 +64,7 @@ export default defineConfig({
     },
     web_accessible_resources: [
       {
-        resources: ["icons/icon48.png"],
+        resources: ["icons/icon48.png", "ocr.html", "tesseract/*"],
         matches: ["http://*/*", "https://*/*"]
       }
     ]

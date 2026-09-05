@@ -9,10 +9,12 @@ type LanguageSelectProps = {
   onChange: (code: LanguageCode) => void;
   className?: string;
   id?: string;
+  ariaLabel?: string;
 };
 
-export function LanguageSelect({ value, onChange, className, id }: LanguageSelectProps) {
+export function LanguageSelect({ value, onChange, className, id, ariaLabel }: LanguageSelectProps) {
   const options = useMemo(() => sortedLanguages(), []);
+  const label = ariaLabel ?? t("targetLanguage");
   return (
     <Select
       value={value}
@@ -20,7 +22,7 @@ export function LanguageSelect({ value, onChange, className, id }: LanguageSelec
         if (isSupportedLang(next)) onChange(next);
       }}
     >
-      <SelectTrigger id={id} className={cn("w-full", className)} aria-label={t("targetLanguage")} title={t("targetLanguage")}>
+      <SelectTrigger id={id} className={cn("w-full", className)} aria-label={label} title={label}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

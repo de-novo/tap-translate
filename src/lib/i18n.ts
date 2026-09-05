@@ -6,6 +6,7 @@ import {
   PREFERRED_LANGS,
   type LanguageCode
 } from "./language";
+import { runtimeAlive } from "./runtime";
 
 export type MessageKey =
   | "extName"
@@ -37,14 +38,29 @@ export type MessageKey =
   | "popupTagline"
   | "showFloatingButton"
   | "restoreOnThisSite"
-  | "shortcutHint";
+  | "shortcutHint"
+  | "inputTranslate"
+  | "inputTargetLanguage"
+  | "copyTranslation"
+  | "copied"
+  | "translatingImages";
 
 export function t(key: MessageKey, substitutions?: string | string[]): string {
-  return browser.i18n.getMessage(key, substitutions) || key;
+  try {
+    if (!runtimeAlive()) return key;
+    return browser.i18n.getMessage(key, substitutions) || key;
+  } catch {
+    return key;
+  }
 }
 
 export function uiLanguage(): string {
-  return browser.i18n.getUILanguage() || "en";
+  try {
+    if (!runtimeAlive()) return "en";
+    return browser.i18n.getUILanguage() || "en";
+  } catch {
+    return "en";
+  }
 }
 
 export function isRtl(): boolean {
@@ -101,6 +117,13 @@ export function resolveTargetLang(stored: { targetLang?: unknown }): LanguageCod
     return stored.targetLang;
   }
   return defaultTargetLang();
+}
+
+export function resolveInputTargetLang(stored: { inputTargetLang?: unknown }): LanguageCode {
+  if (typeof stored.inputTargetLang === "string" && isSupportedLang(stored.inputTargetLang)) {
+    return stored.inputTargetLang;
+  }
+  return "en";
 }
 
 export function applyDocumentLocale(root: HTMLElement): void {

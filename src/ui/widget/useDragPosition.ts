@@ -1,13 +1,20 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefCallback } from "react";
 import type { Position } from "../../lib/settings";
 
-function clampPosition(wrap: HTMLElement | null, right: number, bottom: number): Position {
+export function clampPosition(wrap: HTMLElement | null, right: number, bottom: number): Position {
   const rect = wrap?.getBoundingClientRect();
   const width = rect?.width || 56;
   const height = rect?.height || 48;
+  const viewWidth = window.visualViewport?.width ?? window.innerWidth;
+  const viewHeight = window.visualViewport?.height ?? window.innerHeight;
+  const maxRight = Math.max(8, viewWidth - width - 8);
+  const maxBottom = Math.max(8, viewHeight - height - 8);
+  if (right < 0 || bottom < 0 || right > viewWidth || bottom > viewHeight) {
+    return { right: 20, bottom: 24 };
+  }
   return {
-    right: Math.min(Math.max(8, right), Math.max(8, window.innerWidth - width - 8)),
-    bottom: Math.min(Math.max(8, bottom), Math.max(8, window.innerHeight - height - 8))
+    right: Math.min(Math.max(8, right), maxRight),
+    bottom: Math.min(Math.max(8, bottom), maxBottom)
   };
 }
 
@@ -90,12 +97,20 @@ export function useDragPosition(
 
   useEffect(() => {
     if (!node) return;
-    const onResize = () => {
-      onMoveRef.current(clampPosition(node, positionRef.current.right, positionRef.current.bottom));
+    const clampNow = () => {
+      const next = clampPosition(node, positionRef.current.right, positionRef.current.bottom);
+      if (next.right !== positionRef.current.right || next.bottom !== positionRef.current.bottom) {
+        onMoveRef.current(next);
+      }
     };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [node]);
+    clampNow();
+    window.addEventListener("resize", clampNow);
+    window.visualViewport?.addEventListener("resize", clampNow);
+    return () => {
+      window.removeEventListener("resize", clampNow);
+      window.visualViewport?.removeEventListener("resize", clampNow);
+    };
+  }, [node, position.right, position.bottom]);
 
   return { dragging, dragRef, onPointerDown };
 }

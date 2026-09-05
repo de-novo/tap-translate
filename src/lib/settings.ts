@@ -1,6 +1,7 @@
 import { browser } from "wxt/browser";
-import { defaultTargetLang, resolveTargetLang } from "./i18n";
+import { defaultTargetLang, resolveInputTargetLang, resolveTargetLang } from "./i18n";
 import type { LanguageCode } from "./language";
+import { isContextInvalidated, runtimeAlive } from "./runtime";
 
 export type Position = {
   right: number;
@@ -10,6 +11,8 @@ export type Position = {
 export type Settings = {
   alwaysTranslate: string[];
   hiddenHosts: string[];
+  inputTargetLang: LanguageCode;
+  inputTranslate: boolean;
   position: Position;
   showFab: boolean;
   targetLang: LanguageCode;
@@ -18,6 +21,8 @@ export type Settings = {
 export const DEFAULT_SETTINGS: Settings = {
   alwaysTranslate: [],
   hiddenHosts: [],
+  inputTargetLang: "en",
+  inputTranslate: false,
   position: { right: 20, bottom: 24 },
   showFab: true,
   targetLang: "en"
@@ -40,6 +45,8 @@ function normalizeSettings(stored: Record<string, unknown>): Settings {
     hiddenHosts: Array.isArray(stored.hiddenHosts)
       ? stored.hiddenHosts.filter((item): item is string => typeof item === "string")
       : [],
+    inputTargetLang: resolveInputTargetLang(stored),
+    inputTranslate: stored.inputTranslate === true,
     position: isPosition(stored.position) ? stored.position : DEFAULT_SETTINGS.position,
     showFab: stored.showFab !== false,
     targetLang: resolveTargetLang(stored)
@@ -51,10 +58,22 @@ export async function loadSettings(): Promise<Settings> {
     ...DEFAULT_SETTINGS,
     targetLang: defaultTargetLang()
   };
-  const stored = (await browser.storage.sync.get(fallback)) as Record<string, unknown>;
-  return normalizeSettings(stored);
+  if (!runtimeAlive()) return fallback;
+  try {
+    const stored = (await browser.storage.sync.get(fallback)) as Record<string, unknown>;
+    return normalizeSettings(stored);
+  } catch (error) {
+    if (isContextInvalidated(error)) return fallback;
+    throw error;
+  }
 }
 
 export async function saveSettings(patch: Partial<Settings>): Promise<void> {
-  await browser.storage.sync.set(patch);
+  if (!runtimeAlive()) return;
+  try {
+    await browser.storage.sync.set(patch);
+  } catch (error) {
+    if (isContextInvalidated(error)) return;
+    throw error;
+  }
 }

@@ -100,5 +100,20 @@
         "example": "Alt+Shift+T"
       }
     }
+  },
+  "inputTranslate": {
+    "message": "入力を翻訳"
+  },
+  "inputTargetLanguage": {
+    "message": "入力の翻訳先"
+  },
+  "copyTranslation": {
+    "message": "コピー"
+  },
+  "translatingImages": {
+    "message": "画像を翻訳中…"
+  },
+  "copied": {
+    "message": "コピーしました"
   }
 }

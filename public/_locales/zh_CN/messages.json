@@ -100,5 +100,20 @@
         "example": "Alt+Shift+T"
       }
     }
+  },
+  "inputTranslate": {
+    "message": "翻译输入内容"
+  },
+  "inputTargetLanguage": {
+    "message": "输入目标语言"
+  },
+  "copyTranslation": {
+    "message": "复制"
+  },
+  "translatingImages": {
+    "message": "正在翻译图片…"
+  },
+  "copied": {
+    "message": "已复制"
   }
 }

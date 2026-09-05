@@ -6,19 +6,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { collectTextNodes, shouldTranslateText, WIDGET_HOST_ID } from "@/lib/dom";
+import { collectPageImages } from "@/lib/image-targets";
+import { broadcastFrameSync, FRAME_SYNC, pageHasIframes, watchNewIframes } from "@/lib/frame-sync";
 import { defaultTargetLang, isRtl, t, uiLanguage } from "@/lib/i18n";
 import { isAlreadyTargetLang, type LanguageCode } from "@/lib/language";
 import type { PageTranslator } from "@/lib/page-translator";
 import { isSettingsMessage, isShowSiteMessage, isToggleMessage } from "@/lib/protocol";
-import { runtimeAlive } from "@/lib/runtime";
+import { ignoreChrome, runtimeAlive, runtimeUrl } from "@/lib/runtime";
 import { matchPageTranslate } from "@/lib/translate-result";
 import type { Position } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { currentHost } from "../shared/host";
+import { InputTranslateControls } from "../shared/InputTranslateControls";
 import { LanguageSelect } from "../shared/LanguageSelect";
 import { useSettings } from "../shared/useSettings";
 import { Grip } from "./Grip";
-import { useDragPosition } from "./useDragPosition";
+import { InputPreview } from "./InputPreview";
+import { clampPosition, useDragPosition } from "./useDragPosition";
 
 type Status = {
   text: string;
@@ -39,15 +43,21 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<Status | null>(null);
   const [translatorState, setTranslatorState] = useState(translator.state);
-  const [hidden, setHidden] = useState(false);
+  const [framesTranslated, setFramesTranslated] = useState(false);
   const [fullscreen, setFullscreen] = useState(Boolean(document.fullscreenElement));
   const [position, setPosition] = useState<Position>(settings?.position ?? { right: 20, bottom: 24 });
-  const iconUrl = browser.runtime.getURL("/icons/icon48.png");
+  const [iconBroken, setIconBroken] = useState(false);
+  const iconUrl = runtimeUrl("/icons/icon48.png");
   const failed = Boolean(status?.action);
 
   useEffect(() => {
-    if (settings?.position) setPosition(settings.position);
-  }, [settings?.position]);
+    if (!settings?.position) return;
+    const next = clampPosition(null, settings.position.right, settings.position.bottom);
+    setPosition(next);
+    if (next.right !== settings.position.right || next.bottom !== settings.position.bottom) {
+      void update({ position: next });
+    }
+  }, [settings?.position, update]);
 
   const commitPosition = useCallback(
     (next: Position) => {
@@ -57,7 +67,8 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     [update]
   );
 
-  const canDrag = ready && !hidden;
+  const chipHidden = !settings.showFab || settings.hiddenHosts.includes(currentHost());
+  const canDrag = !chipHidden;
   const { dragging, dragRef, onPointerDown } = useDragPosition(canDrag, position, setPosition, commitPosition);
 
   const syncTranslatorUi = useCallback(() => {
@@ -107,7 +118,10 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
         setSourceLang("auto");
         void detectSource();
       }
-      if (!pageHasForeignText(targetLang)) {
+      broadcastFrameSync({ type: FRAME_SYNC, action: "translate", targetLang });
+      const hasImages = collectPageImages().length > 0;
+      if (!pageHasForeignText(targetLang) && !hasImages) {
+        if (pageHasIframes()) setFramesTranslated(true);
         setStatus(null);
         syncTranslatorUi();
         return;
@@ -115,6 +129,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
 
       setBusy(true);
       setStatus(null);
+      setFramesTranslated(true);
       translator.setProgressHandler((value) => {
         setProgress(value);
         setTranslatorState(translator.state);
@@ -160,6 +175,8 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
 
   const showOriginal = useCallback(() => {
     translator.restore();
+    setFramesTranslated(false);
+    broadcastFrameSync({ type: FRAME_SYNC, action: "restore" });
     setStatus(null);
     syncTranslatorUi();
   }, [syncTranslatorUi, translator]);
@@ -170,9 +187,9 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
       setExpanded(true);
       return;
     }
-    if (translator.state === "translated") showOriginal();
+    if (translator.state === "translated" || framesTranslated) showOriginal();
     else void translateToTarget();
-  }, [busy, failed, showOriginal, translateToTarget, translator]);
+  }, [busy, failed, framesTranslated, showOriginal, translateToTarget, translator]);
 
   useEffect(() => {
     translator.setProgressHandler((value) => {
@@ -185,21 +202,15 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
   }, [translator]);
 
   useEffect(() => {
-    if (!ready || !settings) return;
-    if (!settings.showFab || settings.hiddenHosts.includes(currentHost())) {
-      setHidden(true);
-      return;
-    }
-    setHidden(false);
-  }, [ready, settings]);
-
-  useEffect(() => {
-    if (!ready || !settings || hidden) return;
+    if (!ready || !settings || chipHidden) return;
     let cancelled = false;
     void (async () => {
       await detectSource();
       if (cancelled) return;
-      if (settings.alwaysTranslate.includes("*") && pageHasForeignText(settings.targetLang)) {
+      if (
+        settings.alwaysTranslate.includes("*") &&
+        (pageHasForeignText(settings.targetLang) || pageHasIframes())
+      ) {
         await translateToTarget();
       }
     })();
@@ -208,7 +219,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     };
     // First paint after settings load only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, hidden]);
+  }, [ready, chipHidden]);
 
   useEffect(() => {
     const onMessage = (message: unknown) => {
@@ -218,9 +229,11 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
         void reload();
       }
     };
-    browser.runtime.onMessage.addListener(onMessage);
-    return () => browser.runtime.onMessage.removeListener(onMessage);
+    ignoreChrome(() => browser.runtime.onMessage.addListener(onMessage));
+    return () => ignoreChrome(() => browser.runtime.onMessage.removeListener(onMessage));
   }, [reload, togglePage]);
+
+  useEffect(() => watchNewIframes(), []);
 
   useEffect(() => {
     const onFullscreen = () => setFullscreen(Boolean(document.fullscreenElement));
@@ -239,13 +252,16 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     return () => window.removeEventListener("pointerdown", onPointerDownOutside, true);
   }, [expanded]);
 
-  if (!ready || !settings || hidden) return null;
+  if (!settings) return null;
 
   const alwaysOn = settings.alwaysTranslate.includes("*");
   const translating = busy || translatorState === "translating";
-  const translated = translatorState === "translated";
+  const translated = translatorState === "translated" || framesTranslated;
 
   return (
+    <>
+      {settings.inputTranslate ? <InputPreview targetLang={settings.inputTargetLang} /> : null}
+      {chipHidden ? null : (
     <div
       ref={dragRef}
       onPointerDown={onPointerDown}
@@ -256,10 +272,13 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
       dir={isRtl() ? "rtl" : "ltr"}
       lang={uiLanguage()}
       style={{
+        position: "fixed",
         right: position.right,
         bottom: position.bottom,
         left: "auto",
         top: "auto",
+        zIndex: 2147483646,
+        pointerEvents: "auto",
         visibility: fullscreen ? "hidden" : "visible"
       }}
     >
@@ -269,6 +288,17 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
             "relative flex items-center gap-0.5 rounded-2xl border bg-card p-1.5 pr-1 shadow-lg",
             failed ? "border-destructive" : translated ? "border-primary" : "border-primary/35"
           )}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            borderRadius: 16,
+            border: failed ? "1px solid #f28b82" : "1px solid rgba(26,115,232,0.55)",
+            background: "#152033",
+            color: "#e8eaed",
+            padding: "6px 4px 6px 6px",
+            boxShadow: "0 10px 15px -3px rgba(0,0,0,0.25)"
+          }}
         >
           <span data-drag-handle className="cursor-grab px-0.5" title={t("moveButton")}>
             <Grip />
@@ -280,7 +310,31 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
             title={translated ? t("originalLanguage") : t("translatePage")}
             onClick={togglePage}
           >
-            <img src={iconUrl} alt="" className="size-9" />
+            {iconUrl && !iconBroken ? (
+              <img
+                src={iconUrl}
+                alt=""
+                className="size-9"
+                style={{ width: 36, height: 36, display: "block" }}
+                onError={() => setIconBroken(true)}
+              />
+            ) : (
+              <span
+                className="bg-primary text-primary-foreground grid size-9 place-items-center text-xs font-bold"
+                style={{
+                  width: 36,
+                  height: 36,
+                  display: "grid",
+                  placeItems: "center",
+                  background: "#1a73e8",
+                  color: "#fff",
+                  fontSize: 12,
+                  fontWeight: 700
+                }}
+              >
+                文A
+              </span>
+            )}
           </button>
           <button
             type="button"
@@ -345,6 +399,12 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
               />
               {t("alwaysTranslateForeign")}
             </Label>
+            <InputTranslateControls
+              enabled={settings.inputTranslate}
+              targetLang={settings.inputTargetLang}
+              onEnabled={(next) => update({ inputTranslate: next })}
+              onTargetLang={(code) => update({ inputTargetLang: code })}
+            />
             <Button
               type="button"
               variant="ghost"
@@ -375,5 +435,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
         </Card>
       )}
     </div>
+      )}
+    </>
   );
 }

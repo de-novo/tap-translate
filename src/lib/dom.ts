@@ -37,10 +37,11 @@ export function collectTextNodes(root: Node | null): Text[] {
       let parent = node.parentElement;
       while (parent) {
         if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
-        if (parent.isContentEditable) return NodeFilter.FILTER_REJECT;
-        if (parent.closest("[translate='no'], [contenteditable='true']")) {
+        if (parent.isContentEditable || parent.closest("[contenteditable='true']")) {
           return NodeFilter.FILTER_REJECT;
         }
+        // Ignore [translate=no] on the page. Sites put it on <html> to block Chrome's bar
+        // (Weglot, Next). A chip tap still means translate. The widget host is skipped by id.
         if (parent.id === WIDGET_HOST_ID) return NodeFilter.FILTER_REJECT;
         parent = parent.parentElement;
       }

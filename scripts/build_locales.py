@@ -662,6 +662,79 @@ STRINGS = {
     },
 }
 
+# Keys added after the original catalog. Missing locales fall back to English.
+EXTRA = {
+    "inputTranslate": {
+        "en": "Translate typed text",
+        "ko": "입력 번역",
+        "ja": "入力を翻訳",
+        "zh_CN": "翻译输入内容",
+        "zh_TW": "翻譯輸入內容",
+    },
+    "inputTargetLanguage": {
+        "en": "Typed text language",
+        "ko": "입력 목표 언어",
+        "ja": "入力の翻訳先",
+        "zh_CN": "输入目标语言",
+        "zh_TW": "輸入目標語言",
+    },
+    "copyTranslation": {
+        "en": "Copy",
+        "ko": "복사",
+        "ja": "コピー",
+        "zh_CN": "复制",
+        "zh_TW": "複製",
+        "es": "Copiar",
+        "fr": "Copier",
+        "de": "Kopieren",
+        "pt_BR": "Copiar",
+        "ru": "Копировать",
+        "ar": "نسخ",
+        "hi": "कॉपी",
+        "id": "Salin",
+        "vi": "Sao chép",
+        "th": "คัดลอก",
+        "it": "Copia",
+        "pl": "Kopiuj",
+        "tr": "Kopyala",
+        "nl": "Kopiëren",
+        "uk": "Копіювати",
+    },
+    "translatingImages": {
+        "en": "Translating images…",
+        "ko": "이미지 번역 중…",
+        "ja": "画像を翻訳中…",
+        "zh_CN": "正在翻译图片…",
+        "zh_TW": "正在翻譯圖片…",
+    },
+    "copied": {
+        "en": "Copied",
+        "ko": "복사됨",
+        "ja": "コピーしました",
+        "zh_CN": "已复制",
+        "zh_TW": "已複製",
+        "es": "Copiado",
+        "fr": "Copié",
+        "de": "Kopiert",
+        "pt_BR": "Copiado",
+        "ru": "Скопировано",
+        "ar": "تم النسخ",
+        "hi": "कॉपी हो गया",
+        "id": "Disalin",
+        "vi": "Đã sao chép",
+        "th": "คัดลอกแล้ว",
+        "it": "Copiato",
+        "pl": "Skopiowano",
+        "tr": "Kopyalandı",
+        "nl": "Gekopieerd",
+        "uk": "Скопійовано",
+    },
+}
+
+
+def extra_for(locale: str) -> dict[str, str]:
+    return {key: translations.get(locale, translations["en"]) for key, translations in EXTRA.items()}
+
 
 def to_messages(locale_strings: dict[str, str]) -> dict:
     messages = {}
@@ -674,8 +747,9 @@ def to_messages(locale_strings: dict[str, str]) -> dict:
 
 
 def main() -> None:
-    expected = set(STRINGS["en"])
+    expected = set(STRINGS["en"]) | set(EXTRA)
     for locale, strings in STRINGS.items():
+        strings = {**strings, **extra_for(locale)}
         missing = expected - set(strings)
         extra = set(strings) - expected
         if missing or extra:

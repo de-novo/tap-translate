@@ -7,6 +7,7 @@ import { applyDocumentLocale, t } from "@/lib/i18n";
 import { notifyActiveTab } from "@/lib/messaging";
 import { MessageType } from "@/lib/protocol";
 import { hostFromUrl } from "../shared/host";
+import { InputTranslateControls } from "../shared/InputTranslateControls";
 import { LanguageSelect } from "../shared/LanguageSelect";
 import { useSettings } from "../shared/useSettings";
 
@@ -55,6 +56,19 @@ export function PopupApp() {
           }}
         />
       </div>
+
+      <InputTranslateControls
+        enabled={settings.inputTranslate}
+        targetLang={settings.inputTargetLang}
+        onEnabled={async (next) => {
+          await update({ inputTranslate: next });
+          await notifyActiveTab(MessageType.Settings);
+        }}
+        onTargetLang={async (code) => {
+          await update({ inputTargetLang: code });
+          await notifyActiveTab(MessageType.Settings);
+        }}
+      />
 
       <Label className="font-normal">
         <Checkbox

@@ -1,15 +1,14 @@
 import { invalidatedMessage, installContextGuard } from "@/lib/runtime";
-import { mountFloatingWidget } from "@/ui/widget/mount";
-import "@/styles/globals.css";
+import { mountFrameTranslator } from "@/ui/widget/mount-frame";
 
 export default defineContentScript({
   matches: ["http://*/*", "https://*/*"],
   runAt: "document_idle",
-  cssInjectionMode: "ui",
+  allFrames: true,
   main(ctx) {
     installContextGuard();
-    if (window.top !== window) return;
-    void mountFloatingWidget(ctx).catch((error) => {
+    if (window.top === window) return;
+    void mountFrameTranslator(ctx).catch((error) => {
       if (!invalidatedMessage(error)) console.error(error);
     });
   }

@@ -100,5 +100,20 @@
         "example": "Alt+Shift+T"
       }
     }
+  },
+  "inputTranslate": {
+    "message": "입력 번역"
+  },
+  "inputTargetLanguage": {
+    "message": "입력 목표 언어"
+  },
+  "copyTranslation": {
+    "message": "복사"
+  },
+  "translatingImages": {
+    "message": "이미지 번역 중…"
+  },
+  "copied": {
+    "message": "복사됨"
   }
 }

@@ -1,4 +1,3 @@
-import { browser } from "wxt/browser";
 import {
   collectPageLangs,
   collectSampleText,
@@ -9,6 +8,7 @@ import {
 } from "./dom";
 import { googleSourceLang, guessTextLang, isAlreadyTargetLang, normalizeLang } from "./language";
 import { requestDetect, requestTranslations } from "./messaging";
+import { ImageTranslator } from "./image-translator";
 import { createOnDeviceTranslator, type OnDeviceTranslator } from "./on-device";
 import { matchDetectResponse, matchTranslateResponse, type TranslateResponse } from "./protocol";
 import { isContextInvalidated, runtimeAlive } from "./runtime";
@@ -32,6 +32,7 @@ export class PageTranslator {
   private observer: MutationObserver | null = null;
   private onProgress: ProgressHandler | null = null;
   private pendingTimer = 0;
+  private images = new ImageTranslator();
 
   setProgressHandler(handler: ProgressHandler | null): void {
     this.onProgress = handler;
@@ -52,7 +53,7 @@ export class PageTranslator {
     const sample = collectSampleText(2500);
     if (!sample && htmlLang) return htmlLang;
 
-    if (!browser.runtime?.id) return htmlLang || "";
+    if (!runtimeAlive()) return htmlLang || "";
     const detected = matchDetectResponse(await requestDetect(sample || document.title || ""), {
       onOk: (language) => normalizeLang(language),
       onError: () => ""
@@ -249,6 +250,7 @@ export class PageTranslator {
       visible.unshift(this.originalTitle);
     }
 
+    void this.images.translatePage(this.sourceLang, this.targetLang, () => token === this.generation);
     const visibleResult = await this.translateMany(visible);
     if (token !== this.generation) return visibleResult;
     if (visibleResult._tag !== "Translated") {
@@ -256,7 +258,7 @@ export class PageTranslator {
       return visibleResult;
     }
     this.finishVisible(nodes);
-    this.report(rest.length ? 0.65 : 1, "translating");
+    this.report(rest.length ? 0.65 : 0.7, "translating");
     void this.translateRemaining(token, rest).then((result) => {
       if (token !== this.generation) return;
       if (result._tag === "Translated" || result._tag === "Failed") this.report(1, "done");
@@ -267,6 +269,7 @@ export class PageTranslator {
   restore(): void {
     this.generation += 1;
     this.state = "original";
+    this.images.restore();
     this.disconnectObserver();
     const nodes = collectTextNodes(document.body);
     for (const node of nodes) {

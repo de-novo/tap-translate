@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { browser } from "wxt/browser";
 import { isSupportedLang } from "../../lib/language";
-import { runtimeAlive } from "../../lib/runtime";
-import { loadSettings, saveSettings, type Settings } from "../../lib/settings";
+import { ignoreChrome, runtimeAlive } from "../../lib/runtime";
+import { DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from "../../lib/settings";
 
 function applyStorageChange(prev: Settings, changes: Record<string, { newValue?: unknown }>): Settings {
   const next = { ...prev, position: { ...prev.position } };
@@ -20,6 +20,12 @@ function applyStorageChange(prev: Settings, changes: Record<string, { newValue?:
   if (typeof changes.showFab?.newValue === "boolean") {
     next.showFab = changes.showFab.newValue;
   }
+  if (typeof changes.inputTranslate?.newValue === "boolean") {
+    next.inputTranslate = changes.inputTranslate.newValue;
+  }
+  if (typeof changes.inputTargetLang?.newValue === "string" && isSupportedLang(changes.inputTargetLang.newValue)) {
+    next.inputTargetLang = changes.inputTargetLang.newValue;
+  }
   const position = changes.position?.newValue;
   if (position && typeof position === "object") {
     const value = position as Settings["position"];
@@ -31,21 +37,24 @@ function applyStorageChange(prev: Settings, changes: Record<string, { newValue?:
 }
 
 export function useSettings() {
-  const [settings, setSettings] = useState<Settings | null>(null);
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     void loadSettings().then((value) => {
-      if (!cancelled) setSettings(value);
+      if (cancelled) return;
+      setSettings(value);
+      setReady(true);
     });
     const onChange = (changes: Record<string, { newValue?: unknown }>, area: string) => {
       if (!runtimeAlive() || area !== "sync") return;
       setSettings((prev) => (prev ? applyStorageChange(prev, changes) : prev));
     };
-    browser.storage.onChanged.addListener(onChange);
+    ignoreChrome(() => browser.storage.onChanged.addListener(onChange));
     return () => {
       cancelled = true;
-      browser.storage.onChanged.removeListener(onChange);
+      ignoreChrome(() => browser.storage.onChanged.removeListener(onChange));
     };
   }, []);
 
@@ -65,7 +74,8 @@ export function useSettings() {
 
   const reload = useCallback(async () => {
     setSettings(await loadSettings());
+    setReady(true);
   }, []);
 
-  return { settings, update, reload, ready: settings !== null };
+  return { settings, update, reload, ready };
 }

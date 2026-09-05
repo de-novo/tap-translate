@@ -100,5 +100,20 @@
         "example": "Alt+Shift+T"
       }
     }
+  },
+  "inputTranslate": {
+    "message": "Translate typed text"
+  },
+  "inputTargetLanguage": {
+    "message": "Typed text language"
+  },
+  "copyTranslation": {
+    "message": "نسخ"
+  },
+  "translatingImages": {
+    "message": "Translating images…"
+  },
+  "copied": {
+    "message": "تم النسخ"
   }
 }
