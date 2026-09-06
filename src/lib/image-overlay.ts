@@ -1,5 +1,6 @@
-import { captionBox, placeCaption } from "./caption-place";
+import { captionBox, placeBadge, placeCaption } from "./caption-place";
 import { paintedImageRect } from "./image-box";
+import { t } from "./i18n";
 import { IMAGE_LAYER_ID } from "./image-targets";
 
 export type OverlayLine = {
@@ -9,8 +10,18 @@ export type OverlayLine = {
 
 type OverlayEntry = {
   readonly image: HTMLImageElement;
-  readonly root: HTMLDivElement;
+  readonly badge: HTMLButtonElement;
+  readonly caption: HTMLDivElement;
+  open: boolean;
 };
+
+const CHIP = [
+  "background:#152033",
+  "color:#e8eaed",
+  "border:1px solid rgba(26,115,232,0.55)",
+  "box-shadow:0 10px 15px -3px rgba(0,0,0,0.25)",
+  "font-family:ui-sans-serif,system-ui,'Apple SD Gothic Neo','Noto Sans KR',sans-serif"
+].join(";");
 
 export class ImageOverlayRoot {
   private host: HTMLDivElement | null = null;
@@ -28,20 +39,39 @@ export class ImageOverlayRoot {
   add(image: HTMLImageElement, lines: readonly OverlayLine[]): void {
     if (!lines.length) return;
     const host = this.ensureHost();
-    const root = document.createElement("div");
-    root.setAttribute("translate", "no");
-    root.style.cssText = [
+    const badge = document.createElement("button");
+    badge.type = "button";
+    badge.dataset.qt = "image-badge";
+    badge.textContent = "文";
+    badge.title = t("imageCaption");
+    badge.setAttribute("aria-label", t("imageCaption"));
+    badge.style.cssText = [
+      "position:absolute",
+      "box-sizing:border-box",
+      "pointer-events:auto",
+      "margin:0",
+      "padding:0",
+      "display:grid",
+      "place-items:center",
+      "border-radius:12px",
+      "font-size:13px",
+      "font-weight:700",
+      "line-height:1",
+      "cursor:pointer",
+      CHIP
+    ].join(";");
+    const caption = document.createElement("div");
+    caption.dataset.qt = "image-caption";
+    caption.setAttribute("translate", "no");
+    caption.style.cssText = [
       "position:absolute",
       "box-sizing:border-box",
       "pointer-events:auto",
       "overflow:auto",
-      "background:#152033",
-      "color:#e8eaed",
-      "border:1px solid rgba(26,115,232,0.35)",
       "border-radius:12px",
       "padding:8px 10px",
-      "box-shadow:0 10px 15px -3px rgba(0,0,0,0.25)",
-      "font-family:ui-sans-serif,system-ui,'Apple SD Gothic Neo','Noto Sans KR',sans-serif"
+      "display:none",
+      CHIP
     ].join(";");
     for (const [index, line] of lines.entries()) {
       const block = document.createElement("div");
@@ -57,13 +87,35 @@ export class ImageOverlayRoot {
           "margin-top:3px;font-size:11px;line-height:1.35;color:#9aa0a6;word-break:keep-all;overflow-wrap:anywhere";
         block.append(original);
       }
-      root.append(block);
+      caption.append(block);
     }
-    host.append(root);
-    this.entries.push({ image, root });
+    const entry: OverlayEntry = { image, badge, caption, open: false };
+    badge.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.toggle(entry);
+    });
+    host.append(badge, caption);
+    this.entries.push(entry);
     this.layout();
     this.bind();
     this.observer?.observe(image);
+  }
+
+  private toggle(entry: OverlayEntry): void {
+    const next = !entry.open;
+    for (const item of this.entries) item.open = item === entry ? next : false;
+    this.layout();
+  }
+
+  private closeAll(): void {
+    let changed = false;
+    for (const item of this.entries) {
+      if (!item.open) continue;
+      item.open = false;
+      changed = true;
+    }
+    if (changed) this.layout();
   }
 
   private ensureHost(): HTMLDivElement {
@@ -82,25 +134,39 @@ export class ImageOverlayRoot {
     const viewport = { width: window.innerWidth, height: window.innerHeight };
     for (const entry of this.entries) {
       if (!entry.image.isConnected) {
-        entry.root.remove();
+        entry.badge.remove();
+        entry.caption.remove();
         continue;
       }
       leftovers.push(entry);
-      const painted = paintedImageRect(entry.image, entry.image.naturalWidth || entry.image.width, entry.image.naturalHeight || entry.image.height);
+      const painted = paintedImageRect(
+        entry.image,
+        entry.image.naturalWidth || entry.image.width,
+        entry.image.naturalHeight || entry.image.height
+      );
       if (painted.bottom < 0 || painted.top > viewport.height || painted.right < 0 || painted.left > viewport.width) {
-        entry.root.style.display = "none";
+        entry.badge.style.display = "none";
+        entry.caption.style.display = "none";
         continue;
       }
-      entry.root.style.display = "block";
-      const place = placeCaption(
-        { left: painted.left, top: painted.top, width: painted.width, height: painted.height },
-        viewport
-      );
-      const box = captionBox(place);
-      entry.root.style.left = `${box.left}px`;
-      entry.root.style.top = `${box.top}px`;
-      entry.root.style.width = `${box.width}px`;
-      entry.root.style.maxHeight = `${box.height}px`;
+      const image = { left: painted.left, top: painted.top, width: painted.width, height: painted.height };
+      const badge = placeBadge(image);
+      entry.badge.style.display = "grid";
+      entry.badge.style.left = `${badge.left}px`;
+      entry.badge.style.top = `${badge.top}px`;
+      entry.badge.style.width = `${badge.width}px`;
+      entry.badge.style.height = `${badge.height}px`;
+      entry.badge.style.borderColor = entry.open ? "#1a73e8" : "rgba(26,115,232,0.55)";
+      if (!entry.open) {
+        entry.caption.style.display = "none";
+        continue;
+      }
+      const box = captionBox(placeCaption(image, viewport));
+      entry.caption.style.display = "block";
+      entry.caption.style.left = `${box.left}px`;
+      entry.caption.style.top = `${box.top}px`;
+      entry.caption.style.width = `${box.width}px`;
+      entry.caption.style.maxHeight = `${box.height}px`;
     }
     this.entries = leftovers;
     if (!this.entries.length) this.clear();
@@ -110,26 +176,37 @@ export class ImageOverlayRoot {
     if (this.listening) return;
     this.listening = true;
     const onMove = () => this.layout();
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (this.entries.some((entry) => entry.badge.contains(target) || entry.caption.contains(target))) return;
+      this.closeAll();
+    };
     window.addEventListener("scroll", onMove, true);
     window.addEventListener("resize", onMove);
+    window.addEventListener("pointerdown", onPointerDown, true);
     window.visualViewport?.addEventListener("resize", onMove);
     window.visualViewport?.addEventListener("scroll", onMove);
     this.observer = new ResizeObserver(onMove);
     for (const entry of this.entries) this.observer.observe(entry.image);
     this.onMove = onMove;
+    this.onPointerDown = onPointerDown;
   }
 
   private onMove: (() => void) | null = null;
+  private onPointerDown: ((event: PointerEvent) => void) | null = null;
 
   private unbind(): void {
     if (!this.listening || !this.onMove) return;
     window.removeEventListener("scroll", this.onMove, true);
     window.removeEventListener("resize", this.onMove);
+    if (this.onPointerDown) window.removeEventListener("pointerdown", this.onPointerDown, true);
     window.visualViewport?.removeEventListener("resize", this.onMove);
     window.visualViewport?.removeEventListener("scroll", this.onMove);
     this.observer?.disconnect();
     this.observer = null;
     this.listening = false;
     this.onMove = null;
+    this.onPointerDown = null;
   }
 }

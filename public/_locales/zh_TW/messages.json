@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "正在翻譯圖片…"
   },
+  "imageCaption": {
+    "message": "圖片中的文字"
+  },
   "imageTranslate": {
     "message": "同時翻譯圖片"
   },

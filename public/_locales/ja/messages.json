@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "画像を翻訳中…"
   },
+  "imageCaption": {
+    "message": "画像の文字"
+  },
   "imageTranslate": {
     "message": "画像も翻訳"
   },

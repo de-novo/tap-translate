@@ -707,6 +707,13 @@ EXTRA = {
         "zh_CN": "正在翻译图片…",
         "zh_TW": "正在翻譯圖片…",
     },
+    "imageCaption": {
+        "en": "Image text",
+        "ko": "그림 속 글",
+        "ja": "画像の文字",
+        "zh_CN": "图片中的文字",
+        "zh_TW": "圖片中的文字",
+    },
     "imageTranslate": {
         "en": "Translate images",
         "ko": "이미지도 번역",

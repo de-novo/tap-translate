@@ -14,6 +14,8 @@ export const CAPTION_GAP = 8;
 export const CAPTION_MIN_SIDE = 180;
 export const CAPTION_MAX_WIDTH = 280;
 export const CAPTION_MIN_STACK = 72;
+export const BADGE_SIZE = 36;
+export const BADGE_INSET = 8;
 
 const rightEdge = (box: Rect): number => box.left + box.width;
 const bottomEdge = (box: Rect): number => box.top + box.height;
@@ -24,6 +26,17 @@ export function overlaps(a: Rect, b: Rect): boolean {
 
 export function captionBox(place: CaptionPlace): Rect {
   return { left: place.left, top: place.top, width: place.width, height: place.maxHeight };
+}
+
+export function placeBadge(image: Rect): Rect {
+  const size = Math.min(BADGE_SIZE, Math.max(22, Math.min(image.width, image.height) * 0.18));
+  const inset = Math.min(BADGE_INSET, Math.max(4, size * 0.22));
+  return {
+    left: image.left + image.width - size - inset,
+    top: image.top + image.height - size - inset,
+    width: size,
+    height: size
+  };
 }
 
 export function placeCaption(image: Rect, viewport: { width: number; height: number }): CaptionPlace {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { captionBox, overlaps, placeCaption, type Rect } from "./caption-place.ts";
+import { captionBox, overlaps, placeBadge, placeCaption, type Rect } from "./caption-place.ts";
 
 const viewport = { width: 900, height: 700 };
 
@@ -34,6 +34,23 @@ test("placeCaption sits above when the image sits on the bottom edge", () => {
   assert.equal(place.side, "above");
   assert.ok(place.top + place.maxHeight <= image.top);
   assert.equal(overlaps(image, captionBox(place)), false);
+});
+
+test("placeBadge sits inside the image corner and stays small", () => {
+  const image = { left: 28, top: 199, width: 640, height: 240 };
+  const badge = placeBadge(image);
+  assert.ok(badge.left >= image.left);
+  assert.ok(badge.top >= image.top);
+  assert.ok(badge.left + badge.width <= image.left + image.width);
+  assert.ok(badge.top + badge.height <= image.top + image.height);
+  assert.ok(badge.width <= 36);
+  assert.ok(badge.height <= 36);
+});
+
+test("placeBadge does not sit on the neighboring article column", () => {
+  const image = { left: 28, top: 199, width: 640, height: 240 };
+  const aside = { left: 696, top: 82, width: 512, height: 357 };
+  assert.equal(overlaps(placeBadge(image), aside), false);
 });
 
 test("placeCaption never covers the image in the common page shapes", () => {

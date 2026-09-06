@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "Translating images…"
   },
+  "imageCaption": {
+    "message": "Image text"
+  },
   "imageTranslate": {
     "message": "ترجمة الصور"
   },

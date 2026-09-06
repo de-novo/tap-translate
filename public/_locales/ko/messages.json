@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "이미지 번역 중…"
   },
+  "imageCaption": {
+    "message": "그림 속 글"
+  },
   "imageTranslate": {
     "message": "이미지도 번역"
   },
