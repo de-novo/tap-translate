@@ -2,7 +2,8 @@ export const FRAME_SYNC = "QT_FRAME_SYNC";
 
 export type FrameSync =
   | { readonly type: typeof FRAME_SYNC; readonly action: "translate"; readonly targetLang: string }
-  | { readonly type: typeof FRAME_SYNC; readonly action: "restore" };
+  | { readonly type: typeof FRAME_SYNC; readonly action: "restore" }
+  | { readonly type: typeof FRAME_SYNC; readonly action: "imageTranslate"; readonly enabled: boolean };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -10,6 +11,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 export function isFrameSync(value: unknown): value is FrameSync {
   if (!isRecord(value) || value.type !== FRAME_SYNC) return false;
   if (value.action === "restore") return true;
+  if (value.action === "imageTranslate") return typeof value.enabled === "boolean";
   return value.action === "translate" && typeof value.targetLang === "string";
 }
 
@@ -33,7 +35,7 @@ function postToIframes(message: FrameSync): void {
 let lastSync: FrameSync | null = null;
 
 export function broadcastFrameSync(message: FrameSync): void {
-  lastSync = message;
+  if (message.action !== "imageTranslate") lastSync = message;
   postToIframes(message);
 }
 

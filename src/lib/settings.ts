@@ -11,6 +11,7 @@ export type Position = {
 export type Settings = {
   alwaysTranslate: string[];
   hiddenHosts: string[];
+  imageTranslate: boolean;
   inputTargetLang: LanguageCode;
   inputTranslate: boolean;
   position: Position;
@@ -21,6 +22,7 @@ export type Settings = {
 export const DEFAULT_SETTINGS: Settings = {
   alwaysTranslate: [],
   hiddenHosts: [],
+  imageTranslate: false,
   inputTargetLang: "en",
   inputTranslate: false,
   position: { right: 20, bottom: 24 },
@@ -45,6 +47,7 @@ function normalizeSettings(stored: Record<string, unknown>): Settings {
     hiddenHosts: Array.isArray(stored.hiddenHosts)
       ? stored.hiddenHosts.filter((item): item is string => typeof item === "string")
       : [],
+    imageTranslate: stored.imageTranslate === true,
     inputTargetLang: resolveInputTargetLang(stored),
     inputTranslate: stored.inputTranslate === true,
     position: isPosition(stored.position) ? stored.position : DEFAULT_SETTINGS.position,

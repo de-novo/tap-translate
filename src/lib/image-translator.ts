@@ -1,6 +1,6 @@
 import { shouldTranslateText } from "./dom";
 import { collectPageImages, imageSource, isImageInViewport, MAX_PAGE_IMAGES } from "./image-targets";
-import { ImageOverlayRoot, type OverlayLine } from "./image-overlay";
+import { ImageOverlayRoot } from "./image-overlay";
 import { isAlreadyTargetLang } from "./language";
 import { requestTranslations } from "./messaging";
 import { recognizeImage, removeOcrFrame } from "./ocr-bridge";
@@ -14,8 +14,10 @@ const CONCURRENCY = 2;
 export class ImageTranslator {
   private overlays = new ImageOverlayRoot();
   private seen = new WeakSet<HTMLImageElement>();
+  private generation = 0;
 
   restore(): void {
+    this.generation += 1;
     this.overlays.clear();
     this.seen = new WeakSet();
     removeOcrFrame();
@@ -23,14 +25,15 @@ export class ImageTranslator {
 
   async translatePage(sourceLang: string, targetLang: string, alive: () => boolean): Promise<void> {
     if (!runtimeAlive() || !alive()) return;
+    const token = this.generation;
     const images = collectPageImages();
     const visible = images.filter(isImageInViewport);
     const rest = images.filter((image) => !visible.includes(image));
     const queue = [...visible, ...rest].slice(0, MAX_PAGE_IMAGES);
     const lang = tessLang(sourceLang);
     await mapPool(queue, CONCURRENCY, async (image) => {
-      if (!alive() || !runtimeAlive()) return;
-      await this.translateImage(image, lang, targetLang, alive);
+      if (!alive() || !runtimeAlive() || token !== this.generation) return;
+      await this.translateImage(image, lang, targetLang, alive, token);
     });
   }
 
@@ -38,7 +41,8 @@ export class ImageTranslator {
     image: HTMLImageElement,
     lang: string,
     targetLang: string,
-    alive: () => boolean
+    alive: () => boolean,
+    token: number
   ): Promise<void> {
     if (this.seen.has(image)) return;
     this.seen.add(image);
@@ -70,15 +74,13 @@ export class ImageTranslator {
       targetLang
     );
     if (!response.ok || !alive()) return;
-    const lines: OverlayLine[] = pending
-      .map((line, index) => {
-        const translated = response.translations[index]?.trim() ?? "";
-        if (!translated || translated === line.text.trim()) return null;
-        return { ...line, translated };
-      })
-      .filter((line): line is OverlayLine => line != null);
-    if (!lines.length) return;
-    this.overlays.add(image, ocr.width, ocr.height, lines);
+    const lines = pending.flatMap((line, index) => {
+      const translated = response.translations[index]?.trim() ?? "";
+      if (!translated || translated === line.text.trim()) return [];
+      return [{ text: line.text, translated }];
+    });
+    if (!lines.length || token !== this.generation || !alive()) return;
+    this.overlays.add(image, lines);
   }
 }
 

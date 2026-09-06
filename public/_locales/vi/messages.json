@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "Translating images…"
   },
+  "imageTranslate": {
+    "message": "Dịch cả hình ảnh"
+  },
   "copied": {
     "message": "Đã sao chép"
   }

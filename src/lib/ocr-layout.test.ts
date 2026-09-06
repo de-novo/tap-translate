@@ -8,7 +8,6 @@ import {
   looksLikeOcrNoise,
   medianRgb,
   mergeRegions,
-  shouldCenterOverlay,
   type OcrRegion
 } from "./ocr-layout.ts";
 
@@ -94,17 +93,6 @@ test("inflateBox clamps to the image", () => {
     x1: 24,
     y1: 14
   });
-});
-
-test("shouldCenterOverlay centers short signs, not wide body copy", () => {
-  assert.equal(
-    shouldCenterOverlay({ x0: 80, y0: 10, x1: 120, y1: 40, translated: "시작" }, 200),
-    true
-  );
-  assert.equal(
-    shouldCenterOverlay({ x0: 10, y0: 10, x1: 190, y1: 80, translated: "긴 본문 문장이 사진 위에 이어진다" }, 200),
-    false
-  );
 });
 
 test("hexRgb pads channels", () => {

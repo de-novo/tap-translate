@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "Translating images…"
   },
+  "imageTranslate": {
+    "message": "Görselleri de çevir"
+  },
   "copied": {
     "message": "Kopyalandı"
   }

@@ -65,20 +65,6 @@ export function inflateBox(box: Box, width: number, height: number, pad: number)
   };
 }
 
-export function shouldCenterOverlay(
-  line: Box & { readonly translated: string },
-  imageWidth: number
-): boolean {
-  const width = line.x1 - line.x0;
-  const mid = (line.x0 + line.x1) / 2;
-  const short = line.translated.length <= 24 && width < imageWidth * 0.42;
-  const centeredTitle =
-    Math.abs(mid - imageWidth / 2) < imageWidth * 0.08 &&
-    width < imageWidth * 0.62 &&
-    line.translated.length <= 48;
-  return short || centeredTitle;
-}
-
 export function mergeRegions(regions: readonly OcrRegion[]): OcrRegion[] {
   const sorted = [...regions].sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
   const out: OcrRegion[] = [];

@@ -1,5 +1,5 @@
 import { ChevronDownIcon, XIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { browser } from "wxt/browser";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -119,7 +119,8 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
         void detectSource();
       }
       broadcastFrameSync({ type: FRAME_SYNC, action: "translate", targetLang });
-      const hasImages = collectPageImages().length > 0;
+      translator.setImageTranslate(settings.imageTranslate);
+      const hasImages = settings.imageTranslate && collectPageImages().length > 0;
       if (!pageHasForeignText(targetLang) && !hasImages) {
         if (pageHasIframes()) setFramesTranslated(true);
         setStatus(null);
@@ -200,6 +201,18 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
       translator.setProgressHandler(null);
     };
   }, [translator]);
+
+  const imageTranslateReady = useRef(false);
+  const imageTranslate = settings?.imageTranslate ?? false;
+  useEffect(() => {
+    translator.setImageTranslate(imageTranslate);
+    if (!imageTranslateReady.current) {
+      imageTranslateReady.current = true;
+      return;
+    }
+    broadcastFrameSync({ type: FRAME_SYNC, action: "imageTranslate", enabled: imageTranslate });
+    if (imageTranslate) translator.refreshImages();
+  }, [imageTranslate, translator]);
 
   useEffect(() => {
     if (!ready || !settings || chipHidden) return;
@@ -398,6 +411,13 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
                 }}
               />
               {t("alwaysTranslateForeign")}
+            </Label>
+            <Label className="text-muted-foreground font-normal">
+              <Checkbox
+                checked={settings.imageTranslate}
+                onCheckedChange={(checked) => void update({ imageTranslate: checked === true })}
+              />
+              {t("imageTranslate")}
             </Label>
             <InputTranslateControls
               enabled={settings.inputTranslate}

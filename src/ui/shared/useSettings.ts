@@ -20,6 +20,9 @@ function applyStorageChange(prev: Settings, changes: Record<string, { newValue?:
   if (typeof changes.showFab?.newValue === "boolean") {
     next.showFab = changes.showFab.newValue;
   }
+  if (typeof changes.imageTranslate?.newValue === "boolean") {
+    next.imageTranslate = changes.imageTranslate.newValue;
+  }
   if (typeof changes.inputTranslate?.newValue === "boolean") {
     next.inputTranslate = changes.inputTranslate.newValue;
   }

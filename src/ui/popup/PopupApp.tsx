@@ -57,6 +57,17 @@ export function PopupApp() {
         />
       </div>
 
+      <Label className="font-normal">
+        <Checkbox
+          checked={settings.imageTranslate}
+          onCheckedChange={async (checked) => {
+            await update({ imageTranslate: checked === true });
+            await notifyActiveTab(MessageType.Settings);
+          }}
+        />
+        {t("imageTranslate")}
+      </Label>
+
       <InputTranslateControls
         enabled={settings.inputTranslate}
         targetLang={settings.inputTargetLang}

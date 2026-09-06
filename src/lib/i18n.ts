@@ -43,7 +43,8 @@ export type MessageKey =
   | "inputTargetLanguage"
   | "copyTranslation"
   | "copied"
-  | "translatingImages";
+  | "translatingImages"
+  | "imageTranslate";
 
 export function t(key: MessageKey, substitutions?: string | string[]): string {
   try {

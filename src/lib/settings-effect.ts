@@ -12,6 +12,7 @@ export const PositionSchema = Schema.Struct({
 export const SettingsSchema = Schema.Struct({
   alwaysTranslate: Schema.Array(Schema.String),
   hiddenHosts: Schema.Array(Schema.String),
+  imageTranslate: Schema.Boolean,
   inputTargetLang: Schema.String,
   inputTranslate: Schema.Boolean,
   position: PositionSchema,
@@ -22,6 +23,7 @@ export const SettingsSchema = Schema.Struct({
 const toSettings = (decoded: Schema.Schema.Type<typeof SettingsSchema>): Settings => ({
   alwaysTranslate: [...decoded.alwaysTranslate],
   hiddenHosts: [...decoded.hiddenHosts],
+  imageTranslate: decoded.imageTranslate,
   inputTargetLang: isSupportedLang(decoded.inputTargetLang) ? decoded.inputTargetLang : "en",
   inputTranslate: decoded.inputTranslate,
   position: { ...decoded.position },

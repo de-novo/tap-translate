@@ -15,7 +15,14 @@ export async function mountFrameTranslator(ctx: ContentScriptContext): Promise<v
       translator.restore();
       return;
     }
+    if (sync.action === "imageTranslate") {
+      translator.setImageTranslate(sync.enabled);
+      if (sync.enabled) translator.refreshImages();
+      return;
+    }
     if (!shouldTranslateFrame()) return;
+    const settings = await loadSettings();
+    translator.setImageTranslate(settings.imageTranslate);
     await translator.translatePage("auto", sync.targetLang);
   };
 
@@ -30,6 +37,7 @@ export async function mountFrameTranslator(ctx: ContentScriptContext): Promise<v
 
   try {
     const settings = await loadSettings();
+    translator.setImageTranslate(settings.imageTranslate);
     if (settings.alwaysTranslate.includes("*") && shouldTranslateFrame()) {
       await translator.translatePage("auto", settings.targetLang);
     }

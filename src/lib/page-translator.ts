@@ -33,6 +33,7 @@ export class PageTranslator {
   private onProgress: ProgressHandler | null = null;
   private pendingTimer = 0;
   private images = new ImageTranslator();
+  private imageTranslate = false;
 
   setProgressHandler(handler: ProgressHandler | null): void {
     this.onProgress = handler;
@@ -250,11 +251,12 @@ export class PageTranslator {
       visible.unshift(this.originalTitle);
     }
 
-    void this.images.translatePage(this.sourceLang, this.targetLang, () => token === this.generation);
+    this.startImageTranslate(token);
     const visibleResult = await this.translateMany(visible);
     if (token !== this.generation) return visibleResult;
     if (visibleResult._tag !== "Translated") {
       this.state = "original";
+      this.images.restore();
       return visibleResult;
     }
     this.finishVisible(nodes);
@@ -264,6 +266,25 @@ export class PageTranslator {
       if (result._tag === "Translated" || result._tag === "Failed") this.report(1, "done");
     });
     return visibleResult;
+  }
+
+  setImageTranslate(enabled: boolean): void {
+    this.imageTranslate = enabled;
+    if (!enabled) this.images.restore();
+  }
+
+  refreshImages(): void {
+    if (!this.imageTranslate || this.state === "original") return;
+    this.startImageTranslate(this.generation);
+  }
+
+  private startImageTranslate(token: number): void {
+    if (!this.imageTranslate) return;
+    void this.images.translatePage(
+      this.sourceLang,
+      this.targetLang,
+      () => token === this.generation && this.imageTranslate
+    );
   }
 
   restore(): void {

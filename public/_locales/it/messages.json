@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "Translating images…"
   },
+  "imageTranslate": {
+    "message": "Traduci anche le immagini"
+  },
   "copied": {
     "message": "Copiato"
   }

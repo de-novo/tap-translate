@@ -1,6 +1,6 @@
-import { WIDGET_HOST_ID } from "./dom";
+import { IMAGE_LAYER_ID, WIDGET_HOST_ID } from "./dom";
 
-export const IMAGE_LAYER_ID = "qt-image-translate-layer";
+export { IMAGE_LAYER_ID };
 
 const MIN_WIDTH = 80;
 const MIN_HEIGHT = 36;

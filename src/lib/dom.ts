@@ -18,6 +18,7 @@ export const SKIP_TAGS = new Set([
 ]);
 
 export const WIDGET_HOST_ID = "qt-floating-translate-host";
+export const IMAGE_LAYER_ID = "qt-image-translate-layer";
 
 export function shouldTranslateText(text: string | undefined | null): boolean {
   const value = String(text || "").trim();
@@ -42,7 +43,7 @@ export function collectTextNodes(root: Node | null): Text[] {
         }
         // Ignore [translate=no] on the page. Sites put it on <html> to block Chrome's bar
         // (Weglot, Next). A chip tap still means translate. The widget host is skipped by id.
-        if (parent.id === WIDGET_HOST_ID) return NodeFilter.FILTER_REJECT;
+        if (parent.id === WIDGET_HOST_ID || parent.id === IMAGE_LAYER_ID) return NodeFilter.FILTER_REJECT;
         parent = parent.parentElement;
       }
       return NodeFilter.FILTER_ACCEPT;

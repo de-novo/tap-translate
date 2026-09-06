@@ -1,15 +1,14 @@
+import { captionBox, placeCaption } from "./caption-place";
 import { paintedImageRect } from "./image-box";
 import { IMAGE_LAYER_ID } from "./image-targets";
-import { shouldCenterOverlay } from "./ocr-layout";
-import type { OcrLine } from "./protocol";
 
-export type OverlayLine = OcrLine & { readonly translated: string };
+export type OverlayLine = {
+  readonly text: string;
+  readonly translated: string;
+};
 
 type OverlayEntry = {
   readonly image: HTMLImageElement;
-  readonly naturalWidth: number;
-  readonly naturalHeight: number;
-  readonly lines: readonly OverlayLine[];
   readonly root: HTMLDivElement;
 };
 
@@ -26,36 +25,42 @@ export class ImageOverlayRoot {
     this.unbind();
   }
 
-  add(
-    image: HTMLImageElement,
-    naturalWidth: number,
-    naturalHeight: number,
-    lines: readonly OverlayLine[]
-  ): void {
+  add(image: HTMLImageElement, lines: readonly OverlayLine[]): void {
     if (!lines.length) return;
     const host = this.ensureHost();
     const root = document.createElement("div");
     root.setAttribute("translate", "no");
-    root.style.cssText = "position:fixed;pointer-events:none;overflow:hidden;";
-    for (const line of lines) {
-      const box = document.createElement("div");
-      const span = document.createElement("span");
-      span.textContent = line.translated;
-      box.append(span);
-      box.style.cssText = [
-        "position:absolute",
-        "box-sizing:border-box",
-        "display:flex",
-        "align-items:center",
-        "background:" + (line.bg ?? "#ffffff"),
-        "color:" + (line.fg ?? "#1a1a1a"),
-        "font-family:ui-sans-serif,system-ui,'Apple SD Gothic Neo','Noto Sans KR',sans-serif",
-        "overflow:hidden"
-      ].join(";");
-      root.append(box);
+    root.style.cssText = [
+      "position:absolute",
+      "box-sizing:border-box",
+      "pointer-events:auto",
+      "overflow:auto",
+      "background:#152033",
+      "color:#e8eaed",
+      "border:1px solid rgba(26,115,232,0.35)",
+      "border-radius:12px",
+      "padding:8px 10px",
+      "box-shadow:0 10px 15px -3px rgba(0,0,0,0.25)",
+      "font-family:ui-sans-serif,system-ui,'Apple SD Gothic Neo','Noto Sans KR',sans-serif"
+    ].join(";");
+    for (const [index, line] of lines.entries()) {
+      const block = document.createElement("div");
+      if (index > 0) block.style.cssText = "margin-top:8px;padding-top:8px;border-top:1px solid rgba(232,234,237,0.12)";
+      const translated = document.createElement("div");
+      translated.textContent = line.translated;
+      translated.style.cssText = "font-size:13px;line-height:1.4;font-weight:600;word-break:keep-all;overflow-wrap:anywhere";
+      block.append(translated);
+      if (line.text.trim() && line.text.trim() !== line.translated) {
+        const original = document.createElement("div");
+        original.textContent = line.text;
+        original.style.cssText =
+          "margin-top:3px;font-size:11px;line-height:1.35;color:#9aa0a6;word-break:keep-all;overflow-wrap:anywhere";
+        block.append(original);
+      }
+      root.append(block);
     }
     host.append(root);
-    this.entries.push({ image, naturalWidth, naturalHeight, lines, root });
+    this.entries.push({ image, root });
     this.layout();
     this.bind();
     this.observer?.observe(image);
@@ -66,7 +71,7 @@ export class ImageOverlayRoot {
     const host = document.createElement("div");
     host.id = IMAGE_LAYER_ID;
     host.setAttribute("translate", "no");
-    host.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:2147483645;";
+    host.style.cssText = "position:fixed;inset:0;pointer-events:none;overflow:visible;z-index:2147483645;";
     (document.documentElement ?? document.body).append(host);
     this.host = host;
     return host;
@@ -74,37 +79,28 @@ export class ImageOverlayRoot {
 
   private layout(): void {
     const leftovers: OverlayEntry[] = [];
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
     for (const entry of this.entries) {
       if (!entry.image.isConnected) {
         entry.root.remove();
         continue;
       }
       leftovers.push(entry);
-      const rect = paintedImageRect(entry.image, entry.naturalWidth, entry.naturalHeight);
-      entry.root.style.left = `${rect.left}px`;
-      entry.root.style.top = `${rect.top}px`;
-      entry.root.style.width = `${rect.width}px`;
-      entry.root.style.height = `${rect.height}px`;
-      const scaleX = rect.width / Math.max(1, entry.naturalWidth);
-      const scaleY = rect.height / Math.max(1, entry.naturalHeight);
-      Array.from(entry.root.children).forEach((child, index) => {
-        const line = entry.lines[index];
-        if (!(child instanceof HTMLElement) || !line) return;
-        const width = Math.max(8, (line.x1 - line.x0) * scaleX);
-        const height = Math.max(8, (line.y1 - line.y0) * scaleY);
-        const rowHeight = Math.max(8, (line.rowHeight ?? line.y1 - line.y0) * scaleY);
-        const centered = shouldCenterOverlay(line, entry.naturalWidth);
-        child.style.left = `${line.x0 * scaleX}px`;
-        child.style.top = `${line.y0 * scaleY}px`;
-        child.style.width = `${width}px`;
-        child.style.height = `${height}px`;
-        child.style.justifyContent = centered ? "center" : "flex-start";
-        child.style.textAlign = centered ? "center" : "left";
-        child.style.fontWeight = rowHeight >= 26 ? "600" : "500";
-        child.style.borderRadius = `${Math.min(8, Math.max(2, rowHeight * 0.18))}px`;
-        const span = child.firstElementChild;
-        if (span instanceof HTMLElement) fitBlock(child, span, line.translated, height, rowHeight);
-      });
+      const painted = paintedImageRect(entry.image, entry.image.naturalWidth || entry.image.width, entry.image.naturalHeight || entry.image.height);
+      if (painted.bottom < 0 || painted.top > viewport.height || painted.right < 0 || painted.left > viewport.width) {
+        entry.root.style.display = "none";
+        continue;
+      }
+      entry.root.style.display = "block";
+      const place = placeCaption(
+        { left: painted.left, top: painted.top, width: painted.width, height: painted.height },
+        viewport
+      );
+      const box = captionBox(place);
+      entry.root.style.left = `${box.left}px`;
+      entry.root.style.top = `${box.top}px`;
+      entry.root.style.width = `${box.width}px`;
+      entry.root.style.maxHeight = `${box.height}px`;
     }
     this.entries = leftovers;
     if (!this.entries.length) this.clear();
@@ -136,33 +132,4 @@ export class ImageOverlayRoot {
     this.listening = false;
     this.onMove = null;
   }
-}
-
-function fitBlock(el: HTMLElement, span: HTMLElement, text: string, height: number, rowHeight: number): void {
-  const key = `${Math.round(el.clientWidth || 0)}x${Math.round(height)}:${text}`;
-  if (el.dataset.fit === key) return;
-  el.dataset.fit = key;
-  span.textContent = text;
-  const padX = Math.max(3, Math.min(10, rowHeight * 0.18));
-  const padY = Math.max(2, Math.min(8, rowHeight * 0.1));
-  el.style.padding = `${padY}px ${padX}px`;
-  span.style.cssText = [
-    "min-width:0",
-    "width:100%",
-    "white-space:normal",
-    "word-break:keep-all",
-    "overflow-wrap:anywhere",
-    "line-height:1.2",
-    "text-align:inherit"
-  ].join(";");
-  let lo = Math.max(8, rowHeight * 0.42);
-  let hi = Math.max(lo + 1, Math.min(height * 0.9, rowHeight * 0.95));
-  for (let i = 0; i < 8; i += 1) {
-    const mid = (lo + hi) / 2;
-    span.style.fontSize = `${mid}px`;
-    const fits = span.scrollWidth <= span.clientWidth + 1 && el.scrollHeight <= el.clientHeight + 1;
-    if (fits) lo = mid;
-    else hi = mid;
-  }
-  span.style.fontSize = `${lo}px`;
 }

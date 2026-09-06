@@ -113,6 +113,9 @@
   "translatingImages": {
     "message": "正在翻譯圖片…"
   },
+  "imageTranslate": {
+    "message": "同時翻譯圖片"
+  },
   "copied": {
     "message": "已複製"
   }
