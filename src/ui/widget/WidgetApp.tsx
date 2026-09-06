@@ -232,7 +232,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     void (async () => {
       await detectSource();
       if (cancelled) return;
-      if (!shouldStartTranslated(currentHost(), settings.siteTranslate, settings.alwaysTranslate)) return;
+      if (!shouldStartTranslated(currentHost(), settings.siteTranslate)) return;
       if (
         pageHasForeignText(settings.targetLang) ||
         pageHasIframes() ||
@@ -281,7 +281,6 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
 
   if (!settings) return null;
 
-  const alwaysOn = settings.alwaysTranslate.includes("*");
   const translating = busy || translatorState === "translating";
   const translated = translatorState === "translated" || framesTranslated;
 
@@ -441,17 +440,6 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
             </Button>
           </div>
           <CardContent className="space-y-3 px-2.5 pt-1 pb-2.5">
-            <Label className="text-muted-foreground font-normal">
-              <Checkbox
-                checked={alwaysOn}
-                onCheckedChange={async (checked) => {
-                  const next = settings.alwaysTranslate.filter((code) => code !== "*");
-                  if (checked === true) next.push("*");
-                  await update({ alwaysTranslate: next });
-                }}
-              />
-              {t("alwaysTranslateForeign")}
-            </Label>
             <Label className="text-muted-foreground font-normal">
               <Checkbox
                 checked={settings.imageTranslate}

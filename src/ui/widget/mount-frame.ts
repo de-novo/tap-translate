@@ -40,7 +40,7 @@ export async function mountFrameTranslator(ctx: ContentScriptContext): Promise<v
     const settings = await loadSettings();
     translator.setImageTranslate(settings.imageTranslate);
     if (
-      shouldStartTranslated(location.hostname, settings.siteTranslate, settings.alwaysTranslate) &&
+      shouldStartTranslated(location.hostname, settings.siteTranslate) &&
       shouldTranslateFrame()
     ) {
       await translator.translatePage("auto", settings.targetLang);

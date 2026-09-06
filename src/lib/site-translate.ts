@@ -14,14 +14,7 @@ export function rememberSiteTranslate(prev: SiteTranslate, host: string, on: boo
   return { ...prev, [host]: on };
 }
 
-/** Last toggle for this host wins. Unknown hosts follow the global always-translate flag. */
-export function shouldStartTranslated(
-  host: string,
-  siteTranslate: SiteTranslate,
-  alwaysTranslate: readonly string[]
-): boolean {
-  const saved = siteTranslate[host];
-  if (saved === true) return true;
-  if (saved === false) return false;
-  return alwaysTranslate.includes("*") || alwaysTranslate.includes(host);
+/** Only hosts the user turned on. Global always-translate does not start a page by itself. */
+export function shouldStartTranslated(host: string, siteTranslate: SiteTranslate): boolean {
+  return siteTranslate[host] === true;
 }

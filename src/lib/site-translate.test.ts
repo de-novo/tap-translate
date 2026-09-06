@@ -3,16 +3,15 @@ import { test } from "node:test";
 import { rememberSiteTranslate, shouldStartTranslated } from "./site-translate.ts";
 
 test("shouldStartTranslated is off when this host was last turned off", () => {
-  assert.equal(shouldStartTranslated("x.com", { "x.com": false }, ["*"]), false);
+  assert.equal(shouldStartTranslated("x.com", { "x.com": false }), false);
 });
 
 test("shouldStartTranslated is on when this host was last turned on", () => {
-  assert.equal(shouldStartTranslated("x.com", { "x.com": true }, []), true);
+  assert.equal(shouldStartTranslated("x.com", { "x.com": true }), true);
 });
 
-test("shouldStartTranslated follows always-translate only when the host is unknown", () => {
-  assert.equal(shouldStartTranslated("x.com", {}, ["*"]), true);
-  assert.equal(shouldStartTranslated("x.com", {}, []), false);
+test("shouldStartTranslated stays off for unknown hosts", () => {
+  assert.equal(shouldStartTranslated("x.com", {}), false);
 });
 
 test("rememberSiteTranslate writes that host without dropping others", () => {
