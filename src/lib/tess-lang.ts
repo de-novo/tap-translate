@@ -45,3 +45,15 @@ export function tessLang(sourceLang: string): string {
   if (mapped) return mapped;
   return "eng";
 }
+
+/** Photos on an English page are often Korean/Japanese screenshots. */
+export function imageTessLang(sourceLang: string): string {
+  const langs: string[] = [];
+  const add = (code: string) => {
+    if (!langs.includes(code)) langs.push(code);
+  };
+  add(tessLang(sourceLang));
+  add("eng");
+  add("kor");
+  return langs.join("+");
+}

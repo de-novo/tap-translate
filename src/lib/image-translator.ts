@@ -6,7 +6,7 @@ import { requestTranslations } from "./messaging";
 import { recognizeImage, removeOcrFrame } from "./ocr-bridge";
 import { looksLikeOcrNoise } from "./ocr-layout";
 import { runtimeAlive } from "./runtime";
-import { tessLang } from "./tess-lang";
+import { imageTessLang } from "./tess-lang";
 
 const CONFIDENCE = 55;
 const CONCURRENCY = 2;
@@ -30,7 +30,7 @@ export class ImageTranslator {
     const visible = images.filter(isImageInViewport);
     const rest = images.filter((image) => !visible.includes(image));
     const queue = [...visible, ...rest].slice(0, MAX_PAGE_IMAGES);
-    const lang = tessLang(sourceLang);
+    const lang = imageTessLang(sourceLang);
     await mapPool(queue, CONCURRENCY, async (image) => {
       if (!alive() || !runtimeAlive() || token !== this.generation) return;
       await this.translateImage(image, lang, targetLang, alive, token);
