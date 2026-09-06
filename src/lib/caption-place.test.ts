@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { captionBox, overlaps, placeBadge, placeCaption, type Rect } from "./caption-place.ts";
+import { captionBox, overlaps, placeBadge, placeCaption, placePair, type Rect } from "./caption-place.ts";
 
 const viewport = { width: 900, height: 700 };
 
@@ -34,6 +34,26 @@ test("placeCaption sits above when the image sits on the bottom edge", () => {
   assert.equal(place.side, "above");
   assert.ok(place.top + place.maxHeight <= image.top);
   assert.equal(overlaps(image, captionBox(place)), false);
+});
+
+test("placePair puts a full-size copy to the right when there is room", () => {
+  const image = { left: 20, top: 40, width: 300, height: 200 };
+  const place = placePair(image, { width: 900, height: 700 });
+  assert.equal(place.side, "right");
+  assert.equal(place.width, 300);
+  assert.equal(place.height, 200);
+  assert.ok(place.left >= image.left + image.width);
+  assert.equal(overlaps(image, place), false);
+});
+
+test("placePair stacks a full-size copy below when the image is already wide", () => {
+  const image = { left: 10, top: 40, width: 780, height: 200 };
+  const place = placePair(image, { width: 800, height: 700 });
+  assert.equal(place.side, "below");
+  assert.equal(place.width, 780);
+  assert.equal(place.height, 200);
+  assert.ok(place.top >= image.top + image.height);
+  assert.equal(overlaps(image, place), false);
 });
 
 test("placeBadge sits inside the image corner and stays small", () => {

@@ -143,13 +143,24 @@ export class ImageTranslator {
     const lines = pending.flatMap((line, index) => {
       const translated = response.translations[index]?.trim() ?? "";
       if (!translated || translated === line.text.trim()) return [];
-      return [{ text: line.text, translated }];
+      return [
+        {
+          text: line.text,
+          translated,
+          x0: line.x0,
+          y0: line.y0,
+          x1: line.x1,
+          y1: line.y1,
+          bg: line.bg,
+          fg: line.fg
+        }
+      ];
     });
     if (!lines.length) {
       this.overlays.drop(image);
       return;
     }
-    this.overlays.ready(image, lines);
+    this.overlays.ready(image, ocr.width, ocr.height, lines);
   }
 }
 

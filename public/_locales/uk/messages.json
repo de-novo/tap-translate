@@ -113,6 +113,12 @@
   "translatingImages": {
     "message": "Translating images…"
   },
+  "translateOn": {
+    "message": "On"
+  },
+  "translateOff": {
+    "message": "Off"
+  },
   "imageCaption": {
     "message": "Image text"
   },

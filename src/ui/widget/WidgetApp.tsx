@@ -318,36 +318,62 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
           </span>
           <button
             type="button"
-            data-drag-handle
-            className="fab-action relative size-9 overflow-hidden rounded-lg"
-            title={translated ? t("originalLanguage") : t("translatePage")}
+            className="fab-action relative flex items-center overflow-hidden rounded-lg"
+            role="switch"
+            aria-checked={translated}
+            aria-label={t("translatePage")}
+            title={translated ? t("translateOn") : t("translateOff")}
             onClick={togglePage}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              height: 36,
+              padding: "0 8px 0 6px",
+              border: 0,
+              borderRadius: 10,
+              background: translated ? "#1a73e8" : "rgba(255,255,255,0.08)",
+              color: "#e8eaed",
+              cursor: translating ? "wait" : "pointer"
+            }}
           >
             {iconUrl && !iconBroken ? (
               <img
                 src={iconUrl}
                 alt=""
-                className="size-9"
-                style={{ width: 36, height: 36, display: "block" }}
+                style={{ width: 22, height: 22, display: "block", borderRadius: 4 }}
                 onError={() => setIconBroken(true)}
               />
             ) : (
-              <span
-                className="bg-primary text-primary-foreground grid size-9 place-items-center text-xs font-bold"
-                style={{
-                  width: 36,
-                  height: 36,
-                  display: "grid",
-                  placeItems: "center",
-                  background: "#1a73e8",
-                  color: "#fff",
-                  fontSize: 12,
-                  fontWeight: 700
-                }}
-              >
-                文A
-              </span>
+              <span style={{ fontSize: 12, fontWeight: 700, lineHeight: 1 }}>文</span>
             )}
+            <span
+              aria-hidden="true"
+              style={{
+                position: "relative",
+                width: 30,
+                height: 16,
+                borderRadius: 99,
+                background: translated ? "#fff" : "rgba(255,255,255,0.28)",
+                flex: "0 0 auto"
+              }}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  top: 2,
+                  left: translated ? 16 : 2,
+                  width: 12,
+                  height: 12,
+                  borderRadius: 99,
+                  background: translated ? "#1a73e8" : "#e8eaed",
+                  display: "block"
+                }}
+              />
+            </span>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "-0.02em" }}>
+              {translated ? t("translateOn") : t("translateOff")}
+            </span>
           </button>
           <button
             type="button"

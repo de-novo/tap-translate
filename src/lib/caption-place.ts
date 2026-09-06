@@ -39,6 +39,30 @@ export function placeBadge(image: Rect): Rect {
   };
 }
 
+export type PairPlace = Rect & { readonly side: "right" | "below" };
+
+/** Same-size copy of the image, to the right if it fits, otherwise below. Never shrinks the original. */
+export function placePair(image: Rect, viewport: { width: number; height: number }): PairPlace {
+  const gap = CAPTION_GAP;
+  const rightRoom = viewport.width - rightEdge(image) - gap;
+  if (rightRoom >= image.width) {
+    return {
+      left: rightEdge(image) + gap,
+      top: image.top,
+      width: image.width,
+      height: image.height,
+      side: "right"
+    };
+  }
+  return {
+    left: image.left,
+    top: bottomEdge(image) + gap,
+    width: image.width,
+    height: image.height,
+    side: "below"
+  };
+}
+
 export function placeCaption(image: Rect, viewport: { width: number; height: number }): CaptionPlace {
   const gap = CAPTION_GAP;
   const rightRoom = viewport.width - rightEdge(image) - gap;

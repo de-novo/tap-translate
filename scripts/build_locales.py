@@ -707,6 +707,20 @@ EXTRA = {
         "zh_CN": "正在翻译图片…",
         "zh_TW": "正在翻譯圖片…",
     },
+    "translateOn": {
+        "en": "On",
+        "ko": "켜짐",
+        "ja": "オン",
+        "zh_CN": "开",
+        "zh_TW": "開",
+    },
+    "translateOff": {
+        "en": "Off",
+        "ko": "꺼짐",
+        "ja": "オフ",
+        "zh_CN": "关",
+        "zh_TW": "關",
+    },
     "imageCaption": {
         "en": "Image text",
         "ko": "그림 속 글",

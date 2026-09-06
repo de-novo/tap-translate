@@ -113,6 +113,12 @@
   "translatingImages": {
     "message": "이미지 번역 중…"
   },
+  "translateOn": {
+    "message": "켜짐"
+  },
+  "translateOff": {
+    "message": "꺼짐"
+  },
   "imageCaption": {
     "message": "그림 속 글"
   },

@@ -113,6 +113,12 @@
   "translatingImages": {
     "message": "正在翻译图片…"
   },
+  "translateOn": {
+    "message": "开"
+  },
+  "translateOff": {
+    "message": "关"
+  },
   "imageCaption": {
     "message": "图片中的文字"
   },

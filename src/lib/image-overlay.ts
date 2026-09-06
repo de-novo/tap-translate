@@ -1,19 +1,20 @@
-import { captionBox, placeBadge, placeCaption } from "./caption-place";
+import { placeBadge, placePair } from "./caption-place";
 import { paintedImageRect } from "./image-box";
 import { t } from "./i18n";
+import { paintTranslatedImage, type PaintLine } from "./image-paint";
 import { IMAGE_LAYER_ID } from "./image-targets";
 
-export type OverlayLine = {
-  readonly text: string;
-  readonly translated: string;
-};
+export type OverlayLine = PaintLine & { readonly text: string };
 
 type OverlayEntry = {
   readonly image: HTMLImageElement;
   readonly badge: HTMLButtonElement;
-  readonly caption: HTMLDivElement;
+  readonly pair: HTMLCanvasElement;
   open: boolean;
   status: "pending" | "ready";
+  ocrWidth: number;
+  ocrHeight: number;
+  lines: readonly OverlayLine[];
 };
 
 const CHIP = [
@@ -66,27 +67,33 @@ export class ImageOverlayRoot {
       "opacity:0.65",
       CHIP
     ].join(";");
-    const caption = document.createElement("div");
-    caption.dataset.qt = "image-caption";
-    caption.setAttribute("translate", "no");
-    caption.style.cssText = [
+    const pair = document.createElement("canvas");
+    pair.dataset.qt = "image-pair";
+    pair.setAttribute("translate", "no");
+    pair.style.cssText = [
       "position:absolute",
       "box-sizing:border-box",
       "pointer-events:auto",
-      "overflow:auto",
-      "border-radius:12px",
-      "padding:8px 10px",
       "display:none",
-      CHIP
+      "border-radius:8px",
+      "box-shadow:0 10px 15px -3px rgba(0,0,0,0.25)"
     ].join(";");
-    this.fillCaption(caption, [{ text: "", translated: t("translatingImages") }]);
-    const entry: OverlayEntry = { image, badge, caption, open: false, status: "pending" };
+    const entry: OverlayEntry = {
+      image,
+      badge,
+      pair,
+      open: false,
+      status: "pending",
+      ocrWidth: 1,
+      ocrHeight: 1,
+      lines: []
+    };
     badge.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
       this.toggle(entry);
     });
-    host.append(badge, caption);
+    host.append(badge, pair);
     this.entries.push(entry);
     this.byImage.set(image, entry);
     this.layout();
@@ -94,7 +101,12 @@ export class ImageOverlayRoot {
     this.observer?.observe(image);
   }
 
-  ready(image: HTMLImageElement, lines: readonly OverlayLine[]): void {
+  ready(
+    image: HTMLImageElement,
+    ocrWidth: number,
+    ocrHeight: number,
+    lines: readonly OverlayLine[]
+  ): void {
     if (!lines.length) {
       this.drop(image);
       return;
@@ -103,13 +115,16 @@ export class ImageOverlayRoot {
     const entry = this.byImage.get(image);
     if (!entry) return;
     entry.status = "ready";
+    entry.ocrWidth = ocrWidth;
+    entry.ocrHeight = ocrHeight;
+    entry.lines = lines;
     entry.badge.dataset.status = "ready";
     entry.badge.title = t("imageCaption");
     entry.badge.setAttribute("aria-label", t("imageCaption"));
     entry.badge.removeAttribute("aria-busy");
     entry.badge.style.cursor = "pointer";
     entry.badge.style.opacity = "1";
-    this.fillCaption(entry.caption, lines);
+    this.paint(entry);
     this.layout();
   }
 
@@ -117,47 +132,33 @@ export class ImageOverlayRoot {
     const entry = this.byImage.get(image);
     if (!entry) return;
     entry.badge.remove();
-    entry.caption.remove();
+    entry.pair.remove();
     this.byImage.delete(image);
     this.entries = this.entries.filter((item) => item !== entry);
     if (!this.entries.length) this.clear();
     else this.layout();
   }
 
-  private fillCaption(caption: HTMLDivElement, lines: readonly OverlayLine[]): void {
-    caption.replaceChildren();
-    for (const [index, line] of lines.entries()) {
-      const block = document.createElement("div");
-      if (index > 0) block.style.cssText = "margin-top:8px;padding-top:8px;border-top:1px solid rgba(232,234,237,0.12)";
-      const translated = document.createElement("div");
-      translated.textContent = line.translated;
-      translated.style.cssText = "font-size:13px;line-height:1.4;font-weight:600;word-break:keep-all;overflow-wrap:anywhere";
-      block.append(translated);
-      if (line.text.trim() && line.text.trim() !== line.translated) {
-        const original = document.createElement("div");
-        original.textContent = line.text;
-        original.style.cssText =
-          "margin-top:3px;font-size:11px;line-height:1.35;color:#9aa0a6;word-break:keep-all;overflow-wrap:anywhere";
-        block.append(original);
-      }
-      caption.append(block);
-    }
+  private paint(entry: OverlayEntry): void {
+    const painted = paintTranslatedImage(
+      entry.image,
+      entry.image.naturalWidth || entry.image.width,
+      entry.image.naturalHeight || entry.image.height,
+      entry.ocrWidth,
+      entry.ocrHeight,
+      entry.lines
+    );
+    const ctx = entry.pair.getContext("2d");
+    entry.pair.width = painted.width;
+    entry.pair.height = painted.height;
+    ctx?.drawImage(painted, 0, 0);
   }
 
   private toggle(entry: OverlayEntry): void {
+    if (entry.status !== "ready") return;
     const next = !entry.open;
     for (const item of this.entries) item.open = item === entry ? next : false;
     this.layout();
-  }
-
-  private closeAll(): void {
-    let changed = false;
-    for (const item of this.entries) {
-      if (!item.open) continue;
-      item.open = false;
-      changed = true;
-    }
-    if (changed) this.layout();
   }
 
   private ensureHost(): HTMLDivElement {
@@ -177,7 +178,7 @@ export class ImageOverlayRoot {
     for (const entry of this.entries) {
       if (!entry.image.isConnected) {
         entry.badge.remove();
-        entry.caption.remove();
+        entry.pair.remove();
         this.byImage.delete(entry.image);
         continue;
       }
@@ -189,7 +190,7 @@ export class ImageOverlayRoot {
       );
       if (painted.bottom < 0 || painted.top > viewport.height || painted.right < 0 || painted.left > viewport.width) {
         entry.badge.style.display = "none";
-        entry.caption.style.display = "none";
+        entry.pair.style.display = "none";
         continue;
       }
       const image = { left: painted.left, top: painted.top, width: painted.width, height: painted.height };
@@ -200,16 +201,16 @@ export class ImageOverlayRoot {
       entry.badge.style.width = `${badge.width}px`;
       entry.badge.style.height = `${badge.height}px`;
       entry.badge.style.borderColor = entry.open ? "#1a73e8" : "rgba(26,115,232,0.55)";
-      if (!entry.open) {
-        entry.caption.style.display = "none";
+      if (!entry.open || entry.status !== "ready") {
+        entry.pair.style.display = "none";
         continue;
       }
-      const box = captionBox(placeCaption(image, viewport));
-      entry.caption.style.display = "block";
-      entry.caption.style.left = `${box.left}px`;
-      entry.caption.style.top = `${box.top}px`;
-      entry.caption.style.width = `${box.width}px`;
-      entry.caption.style.maxHeight = `${box.height}px`;
+      const box = placePair(image, viewport);
+      entry.pair.style.display = "block";
+      entry.pair.style.left = `${box.left}px`;
+      entry.pair.style.top = `${box.top}px`;
+      entry.pair.style.width = `${box.width}px`;
+      entry.pair.style.height = `${box.height}px`;
     }
     this.entries = leftovers;
     if (!this.entries.length) this.clear();
@@ -219,37 +220,26 @@ export class ImageOverlayRoot {
     if (this.listening) return;
     this.listening = true;
     const onMove = () => this.layout();
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target;
-      if (!(target instanceof Node)) return;
-      if (this.entries.some((entry) => entry.badge.contains(target) || entry.caption.contains(target))) return;
-      this.closeAll();
-    };
     window.addEventListener("scroll", onMove, true);
     window.addEventListener("resize", onMove);
-    window.addEventListener("pointerdown", onPointerDown, true);
     window.visualViewport?.addEventListener("resize", onMove);
     window.visualViewport?.addEventListener("scroll", onMove);
     this.observer = new ResizeObserver(onMove);
     for (const entry of this.entries) this.observer.observe(entry.image);
     this.onMove = onMove;
-    this.onPointerDown = onPointerDown;
   }
 
   private onMove: (() => void) | null = null;
-  private onPointerDown: ((event: PointerEvent) => void) | null = null;
 
   private unbind(): void {
     if (!this.listening || !this.onMove) return;
     window.removeEventListener("scroll", this.onMove, true);
     window.removeEventListener("resize", this.onMove);
-    if (this.onPointerDown) window.removeEventListener("pointerdown", this.onPointerDown, true);
     window.visualViewport?.removeEventListener("resize", this.onMove);
     window.visualViewport?.removeEventListener("scroll", this.onMove);
     this.observer?.disconnect();
     this.observer = null;
     this.listening = false;
     this.onMove = null;
-    this.onPointerDown = null;
   }
 }
