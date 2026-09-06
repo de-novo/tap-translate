@@ -17,6 +17,7 @@ import { matchPageTranslate } from "@/lib/translate-result";
 import type { Position } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { currentHost } from "../shared/host";
+import { rememberSiteTranslate, shouldStartTranslated } from "@/lib/site-translate";
 import { InputTranslateControls } from "../shared/InputTranslateControls";
 import { LanguageSelect } from "../shared/LanguageSelect";
 import { useSettings } from "../shared/useSettings";
@@ -137,7 +138,12 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
       });
       const result = await translator.translatePage(nextSource, targetLang);
       matchPageTranslate(result, {
-        onTranslated: () => setStatus(null),
+        onTranslated: () => {
+          setStatus(null);
+          void update({
+            siteTranslate: rememberSiteTranslate(settings.siteTranslate, currentHost(), true)
+          });
+        },
         onInvalidated: () =>
           fail({
             text: t("translateFailed"),
@@ -170,7 +176,8 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
       settings,
       sourceLang,
       syncTranslatorUi,
-      translator
+      translator,
+      update
     ]
   );
 
@@ -180,7 +187,12 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     broadcastFrameSync({ type: FRAME_SYNC, action: "restore" });
     setStatus(null);
     syncTranslatorUi();
-  }, [syncTranslatorUi, translator]);
+    if (settings) {
+      void update({
+        siteTranslate: rememberSiteTranslate(settings.siteTranslate, currentHost(), false)
+      });
+    }
+  }, [settings, syncTranslatorUi, translator, update]);
 
   const togglePage = useCallback(() => {
     if (busy) return;
@@ -215,14 +227,16 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
   }, [imageTranslate, translator]);
 
   useEffect(() => {
-    if (!ready || !settings || chipHidden) return;
+    if (!ready || !settings) return;
     let cancelled = false;
     void (async () => {
       await detectSource();
       if (cancelled) return;
+      if (!shouldStartTranslated(currentHost(), settings.siteTranslate, settings.alwaysTranslate)) return;
       if (
-        settings.alwaysTranslate.includes("*") &&
-        (pageHasForeignText(settings.targetLang) || pageHasIframes())
+        pageHasForeignText(settings.targetLang) ||
+        pageHasIframes() ||
+        (settings.imageTranslate && collectPageImages().length > 0)
       ) {
         await translateToTarget();
       }
@@ -232,7 +246,7 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     };
     // First paint after settings load only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, chipHidden]);
+  }, [ready]);
 
   useEffect(() => {
     const onMessage = (message: unknown) => {

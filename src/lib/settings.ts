@@ -2,6 +2,7 @@ import { browser } from "wxt/browser";
 import { defaultTargetLang, resolveInputTargetLang, resolveTargetLang } from "./i18n";
 import type { LanguageCode } from "./language";
 import { isContextInvalidated, runtimeAlive } from "./runtime";
+import { parseSiteTranslate, type SiteTranslate } from "./site-translate";
 
 export type Position = {
   right: number;
@@ -16,6 +17,7 @@ export type Settings = {
   inputTranslate: boolean;
   position: Position;
   showFab: boolean;
+  siteTranslate: SiteTranslate;
   targetLang: LanguageCode;
 };
 
@@ -27,6 +29,7 @@ export const DEFAULT_SETTINGS: Settings = {
   inputTranslate: false,
   position: { right: 20, bottom: 24 },
   showFab: true,
+  siteTranslate: {},
   targetLang: "en"
 };
 
@@ -52,6 +55,7 @@ function normalizeSettings(stored: Record<string, unknown>): Settings {
     inputTranslate: stored.inputTranslate === true,
     position: isPosition(stored.position) ? stored.position : DEFAULT_SETTINGS.position,
     showFab: stored.showFab !== false,
+    siteTranslate: parseSiteTranslate(stored.siteTranslate),
     targetLang: resolveTargetLang(stored)
   };
 }

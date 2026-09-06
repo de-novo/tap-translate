@@ -3,6 +3,7 @@ import { listenFrameSync, shouldTranslateFrame, type FrameSync } from "@/lib/fra
 import { PageTranslator } from "@/lib/page-translator";
 import { invalidatedMessage, runtimeAlive, scriptContextDead } from "@/lib/runtime";
 import { loadSettings } from "@/lib/settings";
+import { shouldStartTranslated } from "@/lib/site-translate";
 
 export async function mountFrameTranslator(ctx: ContentScriptContext): Promise<void> {
   if (window.top === window || !shouldTranslateFrame()) return;
@@ -38,7 +39,10 @@ export async function mountFrameTranslator(ctx: ContentScriptContext): Promise<v
   try {
     const settings = await loadSettings();
     translator.setImageTranslate(settings.imageTranslate);
-    if (settings.alwaysTranslate.includes("*") && shouldTranslateFrame()) {
+    if (
+      shouldStartTranslated(location.hostname, settings.siteTranslate, settings.alwaysTranslate) &&
+      shouldTranslateFrame()
+    ) {
       await translator.translatePage("auto", settings.targetLang);
     }
   } catch (error) {

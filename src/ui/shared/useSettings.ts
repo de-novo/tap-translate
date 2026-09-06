@@ -29,6 +29,14 @@ function applyStorageChange(prev: Settings, changes: Record<string, { newValue?:
   if (typeof changes.inputTargetLang?.newValue === "string" && isSupportedLang(changes.inputTargetLang.newValue)) {
     next.inputTargetLang = changes.inputTargetLang.newValue;
   }
+  if (changes.siteTranslate?.newValue && typeof changes.siteTranslate.newValue === "object") {
+    const value = changes.siteTranslate.newValue as Record<string, unknown>;
+    const siteTranslate: Settings["siteTranslate"] = {};
+    for (const [host, on] of Object.entries(value)) {
+      if (typeof on === "boolean") siteTranslate[host] = on;
+    }
+    next.siteTranslate = siteTranslate;
+  }
   const position = changes.position?.newValue;
   if (position && typeof position === "object") {
     const value = position as Settings["position"];
@@ -69,7 +77,8 @@ export function useSettings() {
         ...patch,
         position: patch.position ?? prev.position,
         alwaysTranslate: patch.alwaysTranslate ?? prev.alwaysTranslate,
-        hiddenHosts: patch.hiddenHosts ?? prev.hiddenHosts
+        hiddenHosts: patch.hiddenHosts ?? prev.hiddenHosts,
+        siteTranslate: patch.siteTranslate ?? prev.siteTranslate
       };
     });
     await saveSettings(patch);

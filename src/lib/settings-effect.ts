@@ -17,6 +17,7 @@ export const SettingsSchema = Schema.Struct({
   inputTranslate: Schema.Boolean,
   position: PositionSchema,
   showFab: Schema.Boolean,
+  siteTranslate: Schema.Record({ key: Schema.String, value: Schema.Boolean }),
   targetLang: Schema.String
 });
 
@@ -28,6 +29,7 @@ const toSettings = (decoded: Schema.Schema.Type<typeof SettingsSchema>): Setting
   inputTranslate: decoded.inputTranslate,
   position: { ...decoded.position },
   showFab: decoded.showFab,
+  siteTranslate: { ...decoded.siteTranslate },
   targetLang: isSupportedLang(decoded.targetLang) ? decoded.targetLang : defaultTargetLang()
 });
 
