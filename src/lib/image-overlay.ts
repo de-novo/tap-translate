@@ -13,6 +13,7 @@ type OverlayEntry = {
   readonly badge: HTMLButtonElement;
   readonly caption: HTMLDivElement;
   open: boolean;
+  status: "pending" | "ready";
 };
 
 const CHIP = [
@@ -26,25 +27,29 @@ const CHIP = [
 export class ImageOverlayRoot {
   private host: HTMLDivElement | null = null;
   private entries: OverlayEntry[] = [];
+  private byImage = new WeakMap<HTMLImageElement, OverlayEntry>();
   private listening = false;
   private observer: ResizeObserver | null = null;
 
   clear(): void {
     this.entries = [];
+    this.byImage = new WeakMap();
     this.host?.remove();
     this.host = null;
     this.unbind();
   }
 
-  add(image: HTMLImageElement, lines: readonly OverlayLine[]): void {
-    if (!lines.length) return;
+  mark(image: HTMLImageElement): void {
+    if (this.byImage.has(image)) return;
     const host = this.ensureHost();
     const badge = document.createElement("button");
     badge.type = "button";
     badge.dataset.qt = "image-badge";
+    badge.dataset.status = "pending";
     badge.textContent = "文";
-    badge.title = t("imageCaption");
-    badge.setAttribute("aria-label", t("imageCaption"));
+    badge.title = t("translatingImages");
+    badge.setAttribute("aria-label", t("translatingImages"));
+    badge.setAttribute("aria-busy", "true");
     badge.style.cssText = [
       "position:absolute",
       "box-sizing:border-box",
@@ -57,7 +62,8 @@ export class ImageOverlayRoot {
       "font-size:13px",
       "font-weight:700",
       "line-height:1",
-      "cursor:pointer",
+      "cursor:wait",
+      "opacity:0.65",
       CHIP
     ].join(";");
     const caption = document.createElement("div");
@@ -73,6 +79,53 @@ export class ImageOverlayRoot {
       "display:none",
       CHIP
     ].join(";");
+    this.fillCaption(caption, [{ text: "", translated: t("translatingImages") }]);
+    const entry: OverlayEntry = { image, badge, caption, open: false, status: "pending" };
+    badge.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.toggle(entry);
+    });
+    host.append(badge, caption);
+    this.entries.push(entry);
+    this.byImage.set(image, entry);
+    this.layout();
+    this.bind();
+    this.observer?.observe(image);
+  }
+
+  ready(image: HTMLImageElement, lines: readonly OverlayLine[]): void {
+    if (!lines.length) {
+      this.drop(image);
+      return;
+    }
+    this.mark(image);
+    const entry = this.byImage.get(image);
+    if (!entry) return;
+    entry.status = "ready";
+    entry.badge.dataset.status = "ready";
+    entry.badge.title = t("imageCaption");
+    entry.badge.setAttribute("aria-label", t("imageCaption"));
+    entry.badge.removeAttribute("aria-busy");
+    entry.badge.style.cursor = "pointer";
+    entry.badge.style.opacity = "1";
+    this.fillCaption(entry.caption, lines);
+    this.layout();
+  }
+
+  drop(image: HTMLImageElement): void {
+    const entry = this.byImage.get(image);
+    if (!entry) return;
+    entry.badge.remove();
+    entry.caption.remove();
+    this.byImage.delete(image);
+    this.entries = this.entries.filter((item) => item !== entry);
+    if (!this.entries.length) this.clear();
+    else this.layout();
+  }
+
+  private fillCaption(caption: HTMLDivElement, lines: readonly OverlayLine[]): void {
+    caption.replaceChildren();
     for (const [index, line] of lines.entries()) {
       const block = document.createElement("div");
       if (index > 0) block.style.cssText = "margin-top:8px;padding-top:8px;border-top:1px solid rgba(232,234,237,0.12)";
@@ -89,17 +142,6 @@ export class ImageOverlayRoot {
       }
       caption.append(block);
     }
-    const entry: OverlayEntry = { image, badge, caption, open: false };
-    badge.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.toggle(entry);
-    });
-    host.append(badge, caption);
-    this.entries.push(entry);
-    this.layout();
-    this.bind();
-    this.observer?.observe(image);
   }
 
   private toggle(entry: OverlayEntry): void {
@@ -136,6 +178,7 @@ export class ImageOverlayRoot {
       if (!entry.image.isConnected) {
         entry.badge.remove();
         entry.caption.remove();
+        this.byImage.delete(entry.image);
         continue;
       }
       leftovers.push(entry);

@@ -9,6 +9,7 @@ import {
   mergeRegions,
   type OcrRegion
 } from "@/lib/ocr-layout";
+import { ocrCanvasSize } from "@/lib/ocr-scale";
 import { type OcrLine, type OcrResponse } from "@/lib/protocol";
 import { runtimeUrl } from "@/lib/runtime";
 
@@ -88,16 +89,17 @@ function rowHeightOf(line: { bbox: TessBbox; rowAttributes?: { rowHeight?: numbe
 async function recognize(src: string, lang: string): Promise<OcrResponse> {
   const blob = await (await fetch(src)).blob();
   const bitmap = await createImageBitmap(blob);
-  const width = bitmap.width;
-  const height = bitmap.height;
+  const sized = ocrCanvasSize(bitmap.width, bitmap.height);
   const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = sized.width;
+  canvas.height = sized.height;
   const context = canvas.getContext("2d", { willReadFrequently: true });
-  context?.drawImage(bitmap, 0, 0);
+  context?.drawImage(bitmap, 0, 0, sized.width, sized.height);
   bitmap.close();
   const tess = await tessWorker(lang);
-  const result = await tess.recognize(blob, {}, { text: true, blocks: true });
+  const result = await tess.recognize(canvas, {}, { text: true, blocks: true });
+  const width = sized.width;
+  const height = sized.height;
   const regions: OcrRegion[] = [];
   for (const block of result.data.blocks ?? []) {
     for (const paragraph of block.paragraphs) {
