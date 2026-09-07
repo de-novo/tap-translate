@@ -59,7 +59,8 @@ export function useSettings() {
       setReady(true);
     });
     const onChange = (changes: Record<string, { newValue?: unknown }>, area: string) => {
-      if (!runtimeAlive() || area !== "sync") return;
+      if (!runtimeAlive() || (area !== "sync" && area !== "local")) return;
+      if (area === "local" && !changes.siteTranslate) return;
       setSettings((prev) => (prev ? applyStorageChange(prev, changes) : prev));
     };
     ignoreChrome(() => browser.storage.onChanged.addListener(onChange));

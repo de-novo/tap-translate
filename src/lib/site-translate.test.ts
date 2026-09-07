@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { rememberSiteTranslate, shouldStartTranslated, siteKey } from "./site-translate.ts";
+import { dropGlobalAlways, rememberSiteTranslate, shouldStartTranslated, siteKey } from "./site-translate.ts";
+
+test("dropGlobalAlways removes the catch-all always-translate flag", () => {
+  assert.deepEqual(dropGlobalAlways(["*", "example.com"]), ["example.com"]);
+});
 
 test("siteKey ignores path and treats www as the same site", () => {
   assert.equal(siteKey("x.com"), "x.com");

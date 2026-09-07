@@ -181,28 +181,35 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
     ]
   );
 
+  const persistSite = useCallback(
+    (on: boolean) => {
+      if (!settings) return;
+      void update({
+        siteTranslate: rememberSiteTranslate(settings.siteTranslate, currentHost(), on)
+      });
+    },
+    [settings, update]
+  );
+
   const showOriginal = useCallback(() => {
+    persistSite(false);
     translator.restore();
     setFramesTranslated(false);
     broadcastFrameSync({ type: FRAME_SYNC, action: "restore" });
     setStatus(null);
     syncTranslatorUi();
-    if (settings) {
-      void update({
-        siteTranslate: rememberSiteTranslate(settings.siteTranslate, currentHost(), false)
-      });
-    }
-  }, [settings, syncTranslatorUi, translator, update]);
+  }, [persistSite, syncTranslatorUi, translator]);
 
   const togglePage = useCallback(() => {
-    if (busy) return;
     if (failed) {
       setExpanded(true);
       return;
     }
-    if (translator.state === "translated" || framesTranslated) showOriginal();
-    else void translateToTarget();
-  }, [busy, failed, framesTranslated, showOriginal, translateToTarget, translator]);
+    const on = !(translator.state === "translated" || framesTranslated || busy);
+    persistSite(on);
+    if (on) void translateToTarget();
+    else showOriginal();
+  }, [busy, failed, framesTranslated, persistSite, showOriginal, translateToTarget, translator]);
 
   useEffect(() => {
     translator.setProgressHandler((value) => {

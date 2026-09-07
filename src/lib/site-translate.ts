@@ -5,6 +5,10 @@ export function siteKey(hostname: string): string {
   return hostname.trim().toLowerCase().replace(/^www\./, "");
 }
 
+export function dropGlobalAlways(values: readonly string[]): string[] {
+  return values.filter((item) => item !== "*");
+}
+
 export function parseSiteTranslate(value: unknown): SiteTranslate {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return {};
   const out: SiteTranslate = {};
