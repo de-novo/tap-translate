@@ -20,7 +20,7 @@ export function rememberSiteTranslate(prev: SiteTranslate, host: string, on: boo
   return { ...prev, [key]: on };
 }
 
-/** Only hosts the user turned on. Global always-translate does not start a page by itself. */
+/** Last switch for this host. Opening a page does not read this to auto-start. */
 export function shouldStartTranslated(host: string, siteTranslate: SiteTranslate): boolean {
   return siteTranslate[siteKey(host)] === true;
 }

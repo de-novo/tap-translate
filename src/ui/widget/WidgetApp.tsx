@@ -17,7 +17,7 @@ import { matchPageTranslate } from "@/lib/translate-result";
 import type { Position } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { currentHost } from "../shared/host";
-import { rememberSiteTranslate, shouldStartTranslated } from "@/lib/site-translate";
+import { rememberSiteTranslate } from "@/lib/site-translate";
 import { InputTranslateControls } from "../shared/InputTranslateControls";
 import { LanguageSelect } from "../shared/LanguageSelect";
 import { useSettings } from "../shared/useSettings";
@@ -228,23 +228,8 @@ export function WidgetApp({ translator, onHide }: WidgetAppProps) {
 
   useEffect(() => {
     if (!ready || !settings) return;
-    let cancelled = false;
-    void (async () => {
-      await detectSource();
-      if (cancelled) return;
-      if (!shouldStartTranslated(currentHost(), settings.siteTranslate)) return;
-      if (
-        pageHasForeignText(settings.targetLang) ||
-        pageHasIframes() ||
-        (settings.imageTranslate && collectPageImages().length > 0)
-      ) {
-        await translateToTarget();
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-    // First paint after settings load only.
+    void detectSource();
+    // Detect only. The switch stays off until the user turns it on.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 
