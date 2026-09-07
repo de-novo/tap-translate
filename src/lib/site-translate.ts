@@ -1,5 +1,10 @@
 export type SiteTranslate = Record<string, boolean>;
 
+/** Path is ignored. `www.x.com` and `x.com` are the same site. */
+export function siteKey(hostname: string): string {
+  return hostname.trim().toLowerCase().replace(/^www\./, "");
+}
+
 export function parseSiteTranslate(value: unknown): SiteTranslate {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return {};
   const out: SiteTranslate = {};
@@ -10,11 +15,12 @@ export function parseSiteTranslate(value: unknown): SiteTranslate {
 }
 
 export function rememberSiteTranslate(prev: SiteTranslate, host: string, on: boolean): SiteTranslate {
-  if (!host) return prev;
-  return { ...prev, [host]: on };
+  const key = siteKey(host);
+  if (!key) return prev;
+  return { ...prev, [key]: on };
 }
 
 /** Only hosts the user turned on. Global always-translate does not start a page by itself. */
 export function shouldStartTranslated(host: string, siteTranslate: SiteTranslate): boolean {
-  return siteTranslate[host] === true;
+  return siteTranslate[siteKey(host)] === true;
 }
